@@ -1,17 +1,22 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { CallsProvider } from './contexts/CallsContext'
 
 import Header from './Header.jsx';
 
 const App = () => {
   return (
-    <div className='container'>
-      <Header/>
-      <div className="container-view">Some activities should be here</div>
-    </div>
+    <CallsProvider>
+      <div className='container'>
+        <Header/>
+        <ActivityList />
+      </div>
+    </CallsProvider>
   );
 };
 
-ReactDOM.render(<App/>, document.getElementById('app'));
+import { createRoot } from 'react-dom/client';
+import { ActivityList } from './components/ActivityFeed/ActivityList.jsx';
+const root = createRoot(document.getElementById('app'));
+root.render(<App />);
 
 export default App;
