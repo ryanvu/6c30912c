@@ -30,36 +30,36 @@ export const callsApi = {
     return true;
   },
 
-  archiveCall: async (callId) => {
+  updateCallArchiveStatus: async (callId, isArchived) => {
     const response = await fetch(
       `${API_CONFIG.BASE_URL}${API_CONFIG.getActivityEndpoint(callId)}`,
       {
         method: HTTP_METHODS.PATCH,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ is_archived: true })
+        body: JSON.stringify({ is_archived: isArchived })
       }
     );
     
-    if (!response.ok) throw new Error('Failed to archive call');
-
+    if (!response.ok) throw new Error(`Failed to ${isArchived ? 'archive' : 'restore'} call`);
+  
     return true;
   },
-
-  archiveAllCalls: async (callIds, onProgress) => {
+  
+  updateAllCallsArchiveStatus: async (callIds, isArchived, onProgress) => {
     const results = [];
     let completed = 0;
-
+  
     for (const callId of callIds) {
       try {
-        const result = await callsApi.archiveCall(callId);
+        const result = await callsApi.updateCallArchiveStatus(callId, isArchived);
         results.push(result);
         completed++;
         onProgress?.(completed / callIds.length);
       } catch (error) {
-        console.error(`Failed to archive call ${callId}:`, error);
+        console.error(`Failed to ${isArchived ? 'archive' : 'restore'} call ${callId}:`, error);
       }
     }
-
+  
     return results;
   }
 };

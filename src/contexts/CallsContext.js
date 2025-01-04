@@ -2,6 +2,10 @@ import { createContext, useState, useContext, useEffect, useMemo } from 'react';
 import { callsApi } from '../services/calls.service';
 import { useCallsGrouping } from '../hooks/useCallsGrouping';
 
+const ARCHIVE_ACTIONS = {
+  ARCHIVE: true,
+  RESTORE: false,
+}
 export const CallsContext = createContext();
 
 export const CallsProvider = ({ children }) => {
@@ -75,7 +79,7 @@ export const CallsProvider = ({ children }) => {
     setLoading(true);
     setAction('Archiving call...');
     try {
-      const success = await callsApi.archiveCall(callId);
+      const success = await callsApi.updateCallArchiveStatus(callId, ARCHIVE_ACTIONS.ARCHIVE);
       if (!success) throw new Error('Failed to archive call');
 
       const updatedCall = {
@@ -94,12 +98,53 @@ export const CallsProvider = ({ children }) => {
     }
   };
 
+  const restoreCall = async (callId) => {
+    setLoading(true);
+    setAction('Restoring call...');
+    try {
+      const success = await callsApi.updateCallArchiveStatus(callId, ARCHIVE_ACTIONS.RESTORE);
+      if (!success) throw new Error('Failed to restore call');
+
+      const updatedCall = {
+        ...calls.find(call => call.id === callId),
+        is_archived: false
+      };
+  
+      processCalls([...calls, ...archivedCalls].map(call =>
+        call.id === callId ? updatedCall : call
+      ));
+    } catch (err) {
+      setError(err);
+    } finally {
+      setAction(null);
+      setLoading(false);
+    }
+  };
+
   const archiveAllCalls = async () => {
     setLoading(true);
     setAction('Archiving all calls...');
     try {
       const callIds = calls.map(call => call.id);
-      await callsApi.archiveAllCalls(callIds, (progress) => {
+      await callsApi.updateAllCallsArchiveStatus(callIds, ARCHIVE_ACTIONS.ARCHIVE, (progress) => {
+        setArchiveProgress(progress);
+      });
+      await fetchCalls();
+    } catch (err) {
+      setError(err);
+    } finally {
+      setAction(null);
+      setLoading(false);
+      setArchiveProgress(0);
+    }
+  };
+
+  const restoreAllCalls = async () => {
+    setLoading(true);
+    setAction('Restoring all calls...');
+    try {
+      const callIds = archivedCalls.map(call => call.id);
+      await callsApi.updateAllCallsArchiveStatus(callIds, ARCHIVE_ACTIONS.RESTORE, (progress) => {
         setArchiveProgress(progress);
       });
       await fetchCalls();
@@ -123,8 +168,10 @@ export const CallsProvider = ({ children }) => {
     archivedDisplayed,
     archiveProgress,
     archiveCall,
-    getCallInfo,
     archiveAllCalls,
+    restoreCall,
+    restoreAllCalls,
+    getCallInfo,
     resetCalls
   };
 

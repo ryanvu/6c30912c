@@ -9,13 +9,13 @@ import { useConfirmation } from '../../hooks/useConfirmation.js';
 
 
 function ArchivedCalls() {
-  const { archivedDisplayed, loading, action, archiveProgress, resetCalls } = useCalls();
+  const { archivedDisplayed, loading, action, archiveProgress, restoreAllCalls } = useCalls();
     const { 
       isConfirmOpen, 
       openConfirm, 
       closeConfirm, 
       handleConfirm 
-    } = useConfirmation(resetCalls);
+    } = useConfirmation(restoreAllCalls);
 
   if (archivedDisplayed.length === 0) {
     return (
