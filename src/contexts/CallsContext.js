@@ -75,16 +75,17 @@ export const CallsProvider = ({ children }) => {
     }
   }
 
-  const archiveCall = async (callId) => {
+  const updateCallArchiveStatus = async (callId, isArchive) => {
     setLoading(true);
-    setAction('Archiving call...');
+    setAction(`${isArchive ? 'Archiving' : 'Restoring'} call...`);
     try {
-      const success = await callsApi.updateCallArchiveStatus(callId, ARCHIVE_ACTIONS.ARCHIVE);
-      if (!success) throw new Error('Failed to archive call');
-
+      const success = await callsApi.updateCallArchiveStatus(callId, isArchive);
+      if (!success) throw new Error(`Failed to ${isArchive ? 'archive' : 'restore'} call`);
+  
+      const sourceArray = isArchive ? calls : archivedCalls;
       const updatedCall = {
-        ...calls.find(call => call.id === callId),
-        is_archived: true
+        ...sourceArray.find(call => call.id === callId),
+        is_archived: isArchive
       };
   
       processCalls([...calls, ...archivedCalls].map(call =>
@@ -98,35 +99,14 @@ export const CallsProvider = ({ children }) => {
     }
   };
 
-  const restoreCall = async (callId) => {
+  const updateAllCallsArchiveStatus = async (isArchive) => {
     setLoading(true);
-    setAction('Restoring call...');
+    setAction(`${isArchive ? 'Archiving' : 'Restoring'} all calls...`);
     try {
-      const success = await callsApi.updateCallArchiveStatus(callId, ARCHIVE_ACTIONS.RESTORE);
-      if (!success) throw new Error('Failed to restore call');
-
-      const updatedCall = {
-        ...calls.find(call => call.id === callId),
-        is_archived: false
-      };
-  
-      processCalls([...calls, ...archivedCalls].map(call =>
-        call.id === callId ? updatedCall : call
-      ));
-    } catch (err) {
-      setError(err);
-    } finally {
-      setAction(null);
-      setLoading(false);
-    }
-  };
-
-  const archiveAllCalls = async () => {
-    setLoading(true);
-    setAction('Archiving all calls...');
-    try {
-      const callIds = calls.map(call => call.id);
-      await callsApi.updateAllCallsArchiveStatus(callIds, ARCHIVE_ACTIONS.ARCHIVE, (progress) => {
+      const sourceArray = isArchive ? calls : archivedCalls;
+      const callIds = sourceArray.map(call => call.id);
+      
+      await callsApi.updateAllCallsArchiveStatus(callIds, isArchive, (progress) => {
         setArchiveProgress(progress);
       });
       await fetchCalls();
@@ -139,23 +119,11 @@ export const CallsProvider = ({ children }) => {
     }
   };
 
-  const restoreAllCalls = async () => {
-    setLoading(true);
-    setAction('Restoring all calls...');
-    try {
-      const callIds = archivedCalls.map(call => call.id);
-      await callsApi.updateAllCallsArchiveStatus(callIds, ARCHIVE_ACTIONS.RESTORE, (progress) => {
-        setArchiveProgress(progress);
-      });
-      await fetchCalls();
-    } catch (err) {
-      setError(err);
-    } finally {
-      setAction(null);
-      setLoading(false);
-      setArchiveProgress(0);
-    }
-  };
+  const archiveCall = (callId) => updateCallArchiveStatus(callId, ARCHIVE_ACTIONS.ARCHIVE);
+  const restoreCall = (callId) => updateCallArchiveStatus(callId, ARCHIVE_ACTIONS.RESTORE);
+
+  const archiveAllCalls = () => updateAllCallsArchiveStatus(ARCHIVE_ACTIONS.ARCHIVE);
+  const restoreAllCalls = () => updateAllCallsArchiveStatus(ARCHIVE_ACTIONS.RESTORE);
   
   const value = {
     action,
