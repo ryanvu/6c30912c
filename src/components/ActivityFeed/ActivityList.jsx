@@ -1,23 +1,21 @@
 import { useCalls } from '../../contexts/CallsContext';
 import ActivityItem from './ActivityItem.jsx';
-import './ActivityList.css';
 
 export const ActivityList = () => {
   const { groupedCalls, loading } = useCalls();
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <p className="text-gray-500 text-center p-4">Loading...</p>;
   }
 
-  console.log(groupedCalls);
   return (
-    <div className="activity-list">
+    <div className="flex flex-col space-y-6 p-4">
       {groupedCalls.map(({ date, calls }) => (
-        <div key={date} className="flex flex-col">
-          <div className="self-center font-bold">
-            <h3>{date}</h3>
+        <div key={date} className="flex flex-col space-y-4">
+          <div className="self-center">
+            <h3 className="text-gray-500 font-bold text-md">{date}</h3>
           </div>
-          <div className="group-items">
+          <div className="flex flex-col space-y-4">
             {calls.map(call => (
               <ActivityItem key={call.id} call={call} />
             ))}

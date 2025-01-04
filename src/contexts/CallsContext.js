@@ -88,7 +88,11 @@ export const CallsProvider = ({ children }) => {
   const groupedCalls = useMemo(() => {
   
     const groupedCalls = calls.reduce((acc, call) => {
-      const date = new Date(call.created_at).toLocaleDateString();
+      const date = new Date(call.created_at).toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric'
+      });
       if (!acc[date]) acc[date] = [];
       acc[date].push(call);
       return acc;

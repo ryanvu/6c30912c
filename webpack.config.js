@@ -1,3 +1,4 @@
+// webpack.config.js
 const path = require('path');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 
@@ -22,18 +23,8 @@ module.exports = {
         use: [
           'style-loader',
           'css-loader',
-          {
-            loader: 'postcss-loader',
-            options: {
-              postcssOptions: {
-                plugins: [
-                  'tailwindcss',
-                  'autoprefixer',
-                ],
-              },
-            },
-          },
-        ],
+          'postcss-loader'
+        ]
       },
       {
         test: /\.(js|jsx)$/,
