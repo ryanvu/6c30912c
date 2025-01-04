@@ -3,7 +3,8 @@ import { useCalls } from '../../contexts/CallsContext';
 import ActivityItem from '../ActivityFeed/ActivityItem.jsx';
 import { ArchiveRestore } from 'lucide-react';
 import Button, { BUTTON_TYPES } from '../Button/Button.jsx';
-import LoadingModal from '../LoadingModal/LoadingModal.jsx';
+import { LoadingModal } from '../Modal/Modals.jsx';
+
 
 function ArchivedCalls() {
   const { archivedDisplayed, loading, action, archiveProgress } = useCalls();
