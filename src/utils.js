@@ -28,10 +28,60 @@ export const formatTime = (dateString) => {
 };
 
 export const formatDuration = (seconds) => {
-  if (seconds === 0) return '--';
+  if (seconds === 0) return null;
+  
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
-  return `${mins}:${secs.toString().padStart(2, '0')}`;
+  
+  if (mins === 0) {
+    return `${secs}s`;
+  }
+  
+  return `${mins}min ${secs}s`;
+};
+
+export const determineCallStatus = (duration, callType, via, from) => {
+
+  if (callType === 'missed' && duration > 0) {
+    return {
+      label: 'Voicemail',
+      color: 'text-yellow-500'
+    };
+  }
+
+  if (callType === 'answered') {
+
+    if (via && via !== from) {
+      return {
+        label: 'Forwarded',
+        color: 'text-blue-500'
+      };
+    }
+
+    if (duration > 0) {
+      return {
+        label: 'Completed',
+        color: 'text-green-500'
+      };
+    }
+
+    return {
+      label: 'Connection Failed',
+      color: 'text-yellow-500'
+    };
+  }
+
+  if (callType === 'missed') {
+    return {
+      label: 'Missed',
+      color: 'text-red-500'
+    };
+  }
+
+  return {
+    label: callType,
+    color: 'text-gray-500'
+  };
 };
 
 export const CALL_DIRECTIONS = {
