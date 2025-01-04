@@ -33,3 +33,13 @@ export const formatDuration = (seconds) => {
   const secs = seconds % 60;
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 };
+
+export const CALL_DIRECTIONS = {
+  INBOUND: 'inbound',
+  OUTBOUND: 'outbound',
+}
+
+export const CALL_TYPE = {
+  MISSED: 'missed',
+  ANSWERED: 'answered',
+}

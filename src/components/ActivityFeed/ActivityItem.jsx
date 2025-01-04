@@ -1,20 +1,10 @@
-import { PhoneIncoming, PhoneOutgoing, Archive, Info } from 'lucide-react';
-import { formatPhoneNumber, formatTime } from '../../utils';
+import { PhoneIncoming, PhoneOutgoing, Archive, Info, X } from 'lucide-react';
+import { CALL_DIRECTIONS, CALL_TYPE, formatDuration, formatPhoneNumber, formatTime } from '../../utils';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCalls } from '../../contexts/CallsContext';
 
-const CALL_DIRECTIONS = {
-  INBOUND: 'inbound',
-  OUTBOUND: 'outbound',
-}
-
-const CALL_TYPE = {
-  MISSED: 'missed',
-  ANSWERED: 'answered',
-}
-
-const ActivityItem = ({ call }) => {
+const ActivityItem = ({ call, i }) => {
   const { direction, call_type, count } = call;
   const [showActions, setShowActions] = useState(false);
 
@@ -45,7 +35,8 @@ const ActivityItem = ({ call }) => {
         <div
           onClick={handleToggleExpand}
           className="flex gap-1 items-center bg-black text-white ml-auto text-xs rounded-l-lg rounded-r-none border-r-0 px-2 py-1 transition transform hover:scale-105">
-          {formatTime(call.created_at)} <Info size={16} />
+          {formatTime(call.created_at)} 
+          {showActions ? <X size={16} /> : <Info size={16} />}
         </div>
       </div>
       <AnimatePresence mode="wait">
@@ -58,7 +49,7 @@ const ActivityItem = ({ call }) => {
           transition={{ duration: 0.2 }}
         >
           <ActivityDetails call={call} />
-        </motion.div>     } 
+        </motion.div>} 
       </AnimatePresence>
     </div>
   );
@@ -67,14 +58,19 @@ const ActivityItem = ({ call }) => {
 const ActivityDetails = ({ call }) => {
   const { archiveCall } = useCalls();
 
+  const { via, call_type, duration } = call;
+  console.log(call);
+
   const handleArchive = async () => {
-    console.log('handleArchive', call);
     await archiveCall(call.id);
   }
 
   return (
-    <div className="flex items-center justify-center gap-4 p-4">
-      <button className="btn btn-primary">Load More</button>
+    <div className="flex justify-between gap-4 p-4">
+      <div className="flex">
+        <span>{call_type}</span>
+        <span>{formatDuration(duration)}</span>
+      </div>
       <button className="btn btn-secondary" onClick={handleArchive}>Archive</button>
     </div>
   )

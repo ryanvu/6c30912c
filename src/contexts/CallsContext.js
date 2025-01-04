@@ -5,12 +5,12 @@ export const CallsContext = createContext();
 
 export const CallsProvider = ({ children }) => {
   const [calls, setCalls] = useState([]);
+  const [action, setAction] = useState(null);
   const [archivedCalls, setArchivedCalls] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const processCalls = (data) => {
-    console.log('processCalls called')
     const active = [];
     const archived = [];
     
@@ -27,8 +27,6 @@ export const CallsProvider = ({ children }) => {
   };
 
   useEffect(() => {
-
-
     fetchCalls();
   }, []);
 
@@ -47,7 +45,6 @@ export const CallsProvider = ({ children }) => {
     }
   };
 
-
   const getCallInfo = async (callId) => {
     try {
       const response = await fetch(
@@ -61,6 +58,8 @@ export const CallsProvider = ({ children }) => {
   }
 
   const resetCalls = async () => {
+    setLoading(true);
+    setAction('Resetting calls...');
     try {
       const response = await fetch(
         `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.RESET}`,
@@ -79,11 +78,15 @@ export const CallsProvider = ({ children }) => {
       await fetchCalls();
     } catch (err) {
       setError(err);
+    } finally {
+      setAction(null);
+      setLoading(false);
     }
   }
 
   const archiveCall = async (callId) => {
-
+    setLoading(true);
+    setAction('Archiving call...');
     try {
       const response = await fetch(
         `${API_CONFIG.BASE_URL}${API_CONFIG.getActivityEndpoint(callId)}`,
@@ -110,12 +113,15 @@ export const CallsProvider = ({ children }) => {
       ));
     } catch (err) {
       setError(err);
+    } finally {
+      setAction(null);
+      setLoading(false);
     }
   };
 
-  const groupedCalls = useMemo(() => {
+  const groupedByDateCalls = useMemo(() => {
   
-    const groupedCalls = calls.reduce((acc, call) => {
+    const groupedByDateCalls = calls.reduce((acc, call) => {
       const date = new Date(call.created_at).toLocaleDateString('en-US', {
         month: 'long',
         day: 'numeric',
@@ -126,7 +132,7 @@ export const CallsProvider = ({ children }) => {
       return acc;
     }, {});
   
-    return Object.entries(groupedCalls)
+    return Object.entries(groupedByDateCalls)
       .sort((a, b) => new Date(b[0]) - new Date(a[0]))
       .map(([date, calls]) => ({
         date,
@@ -135,9 +141,9 @@ export const CallsProvider = ({ children }) => {
       
   }, [calls]);
 
-  const consolidatedCalls = useMemo(() => {
-    return groupedCalls.map(dateGroup => {
-      const groupedCalls = dateGroup.calls.reduce((acc, call) => {
+  const displayedCalls = useMemo(() => {
+    return groupedByDateCalls.map(dateGroup => {
+      const groupedByDateCalls = dateGroup.calls.reduce((acc, call) => {
      
         const key = `${call.from}-${call.to}-${call.direction}-${call.call_type}`;
         
@@ -159,24 +165,29 @@ export const CallsProvider = ({ children }) => {
 
       return {
         date: dateGroup.date,
-        calls: Object.values(groupedCalls)
+        calls: Object.values(groupedByDateCalls)
       };
     });
-  }, [groupedCalls]);
+  }, [groupedByDateCalls]);
 
   const value = {
+    action,
     calls,
     loading,
     error,
     archivedCalls,
-    groupedCalls,
-    consolidatedCalls,
+    groupedByDateCalls,
+    displayedCalls,
     archiveCall,
     getCallInfo,
     resetCalls
   };
 
-  return <CallsContext.Provider value={value}>{children}</CallsContext.Provider>;
+  return (
+  <CallsContext.Provider value={value}>
+    {children}
+  </CallsContext.Provider>
+  );
 };
 
 export const useCalls = () => {

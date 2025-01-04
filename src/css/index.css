@@ -25,9 +25,9 @@ body {
 header {
   height: auto;     /* Changed from fixed 40px */
   min-height: 80px; /* Give it a minimum height */
-  margin: 0 auto;
-  padding: 20px 0;
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
@@ -37,12 +37,11 @@ header {
 
 header svg {
   display: block;
-  width: auto;      /* Changed from 100% */
-  height: 40px;     /* Set a fixed height */
-  margin: 0 auto;   /* Center the SVG */
+  width: auto;
+  height: 30px;    
 }
 
-#app {
+#app, #modal-root {
   position: absolute;
   display: flex;
   align-items: center;
@@ -66,8 +65,14 @@ header svg {
   position: relative;
 }
 
+#modal-root .container {
+  width: 376px;
+  height: 666px;
+  z-index: 100;
+  background: transparent;
+}
+
 #app .container-view {
   padding: 20px;
-
 }
 
