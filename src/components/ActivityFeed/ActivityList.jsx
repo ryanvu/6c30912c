@@ -34,10 +34,14 @@ export const ActivityList = () => {
       />
 
       <StickyActionBar>
-        <Button type={BUTTON_TYPES.PRIMARY} cta="Archive all calls" icon={<Icons.archive />} onClick={() => openConfirm()} />
+        <Button 
+          type={BUTTON_TYPES.PRIMARY} 
+          cta="Archive all calls" 
+          icon={<Icons.archive />} 
+          onClick={() => openConfirm()} 
+        />
       </StickyActionBar>
 
-      <button onClick={() => resetCalls()} className="btn btn-primary">Reset</button>
       {activeDisplayed.map(({ date, calls }) => (
         <div key={date} className="flex flex-col space-y-4">
           <div className="self-center">

@@ -87,3 +87,7 @@ header svg {
   padding: 20px;
 }
 
+.activity-item {
+  @apply flex-col items-center gap-2 pl-4 py-4 rounded-md border-2 transition duration-300;
+}
+

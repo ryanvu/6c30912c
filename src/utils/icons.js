@@ -1,5 +1,5 @@
 // Import the icons used in the workspace
-import { Archive, ArchiveRestore, ArchiveX, Info, PhoneIncoming, PhoneOutgoing, X, PhoneOff } from 'lucide-react';
+import { Archive, ArchiveRestore, ArchiveX, Info, PhoneIncoming, PhoneOutgoing, X, PhoneOff, ScanSearch } from 'lucide-react';
 
 export const Icons = {
   archive: Archive,
@@ -10,4 +10,5 @@ export const Icons = {
   phoneOutgoing: PhoneOutgoing,
   x: X,
   phoneOff: PhoneOff,
+  view: ScanSearch
 };

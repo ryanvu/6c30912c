@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useCalls } from '../../contexts/CallsContext';
 import Button, { BUTTON_TYPES } from '../Button/Button.jsx';
 import { Icons } from '../../utils/icons.js';
+import { callDetailVariants } from '../../animations/animations.js';
 
 const getDisplayNumber = (direction, from, to) => {
   if (direction === CALL_DIRECTIONS.INBOUND) {
@@ -17,6 +18,7 @@ const ActivityItem = ({ call }) => {
   const [showActions, setShowActions] = useState(false);
 
   const iconColor = call_type === CALL_TYPE.MISSED ? 'text-red-500' : 'text-green-500';
+  const expandedStyle = showActions ? 'border-black' : 'border-gray-300';
   const displayNumber = getDisplayNumber(direction, from, to);
 
   const handleToggleExpand = () => {
@@ -24,7 +26,8 @@ const ActivityItem = ({ call }) => {
   }
 
   return (
-    <div className="flex-col items-center gap-2 pl-4 py-4 rounded-md border-gray-200 border-2 transition duration-300">
+    <div className={"activity-item " + expandedStyle}>
+
       <div className="flex items-center gap-2">
         <div>
           {direction === CALL_DIRECTIONS.INBOUND ? (
@@ -52,6 +55,7 @@ const ActivityItem = ({ call }) => {
           {formatTime(call.created_at)} 
           {showActions ? <Icons.x size={16} /> : <Icons.info size={16} />}
         </div>
+
       </div>
       <AnimatePresence mode="wait">
         {showActions && 
@@ -84,15 +88,12 @@ const ActivityDetails = ({ call }) => {
   }
 
   return (
-    <div className="flex justify-between gap-4 px-4">
-      <div className="flex flex-col gap-4 p-2">
+    <div className="flex justify-between gap-4 pr-4 pt-2">
+      <div className="flex flex-col flex-grow gap-4 p-2">
         <div className="space-y-2 text-xs">
           {calls.length > 1 && <h3 className="font-medium">Recent Calls ({calls.length})</h3>}
           {calls.map(groupedCall => (
-            <div key={groupedCall.id} className="flex flex-col text-xs text-gray-600 py-1">
-              <span>{formatTime(groupedCall.created_at)}</span>
-              <span className={status.color}>{status.label} <span className="italic">{formatDuration(groupedCall.duration)}</span></span>
-            </div>
+            <CallDetailPreview key={groupedCall.id} call={groupedCall} status={status} />
           ))}
         </div>
       </div>
@@ -112,6 +113,33 @@ const ActivityDetails = ({ call }) => {
         icon={<Icons.archiveRestore size={16} />}
       ></Button>}
     </div>
+  )
+}
+
+const CallDetailPreview = ({ call, status }) => {
+  return (
+    <motion.div 
+      variants={callDetailVariants.parent}
+      initial="initial"
+      animate="animate"
+      whileHover="hover"
+      transition={{ duration: 0.5 }}
+      className="flex text-xs text-gray-600 py-1 items-center gap-2 cursor-pointer"
+    > 
+      <motion.div
+        variants={callDetailVariants.icon}
+      >
+        <Icons.view size={18}/>
+      </motion.div>
+
+      <div className="flex flex-col border-l-2 border-black pl-2">
+        <span>{formatTime(call.created_at)}</span>
+        <span className={status.color}>
+          {status.label} 
+          <span className="italic">{formatDuration(call.duration)}</span>
+        </span>
+      </div>
+    </motion.div>
   )
 }
 export default ActivityItem;
