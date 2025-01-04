@@ -27,3 +27,17 @@ export const callDetailVariants = {
     }
   }
 }
+
+export const callInfoVariants = {
+  parent: {
+    initial: {
+      opacity: 0,
+    },
+    animate: {
+      opacity: 100,
+      transition: {
+        duration: 3.0
+      }
+    },
+  },
+}

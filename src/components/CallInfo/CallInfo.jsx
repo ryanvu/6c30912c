@@ -3,6 +3,9 @@ import { formatDuration, formatPhoneNumber, formatTime, determineCallStatus, get
 import { Icons } from '../../utils/icons';
 import { CALL_DIRECTIONS } from '../../config';
 import { useCalls } from '../../contexts/CallsContext';
+import { motion } from 'framer-motion';
+import { callInfoVariants } from '../../animations/animations';
+import Button, { BUTTON_TYPES } from '../Button/Button.jsx';
 
 const CallInfo = ({ callId, onClose }) => {
   const { getCallInfo, archiveCall, restoreCall } = useCalls();
@@ -44,11 +47,16 @@ const CallInfo = ({ callId, onClose }) => {
   }
 
   return (
-    <div className="fixed p-4 inset-0 bg-black bg-opacity-50 flex items-center justify-center call-info">
+    <motion.div
+      variants={callInfoVariants.parent}
+      initial="initial"
+      animate="animate"
+      className="fixed p-4 inset-0 bg-black bg-opacity-50 flex items-center justify-center call-info"
+    >
       <div className="bg-white rounded-lg shadow-xl w-96 max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="p-6 border-b">
-          <div className="flex justify-between items-start mb-4">
+        <div className="px-6 py-4 border-b">
+          <div className="flex justify-between items-start">
             <div className="flex gap-3">
               <div>
                 {direction === CALL_DIRECTIONS.INBOUND ? (
@@ -73,12 +81,12 @@ const CallInfo = ({ callId, onClose }) => {
                 </div>
               </div>
             </div>
-            <button 
+            <Button 
               onClick={onClose}
-              className="text-gray-500 hover:text-gray-700 p-1"
-            >
-              <Icons.x size={20} />
-            </button>
+              type={BUTTON_TYPES.ICON}
+              cta="Close"
+              icon={<Icons.x size={20} />}
+            />
           </div>
         </div>
 
@@ -86,20 +94,20 @@ const CallInfo = ({ callId, onClose }) => {
         <div className="p-6 space-y-6">
           {/* Basic Info */}
           <div className="grid grid-cols-2 gap-y-2 text-sm">
-            <span className="text-gray-500">Time</span>
+            <span className="text-gray-500 font-bold">Time</span>
             <span>{formatTime(created_at)}</span>
             
-            <span className="text-gray-500">Via</span>
+            <span className="text-gray-500 font-bold">Via</span>
             <span>{formatPhoneNumber(via)}</span>
 
             {direction === CALL_DIRECTIONS.INBOUND ? (
               <>
-                <span className="text-gray-500">From</span>
+                <span className="text-gray-500 font-bold">From</span>
                 <span>{formatPhoneNumber(from)}</span>
               </>
             ) : (
               <>
-                <span className="text-gray-500">To</span>
+                <span className="text-gray-500 font-bold">To</span>
                 <span>{formatPhoneNumber(to)}</span>
               </>
             )}
@@ -124,7 +132,7 @@ const CallInfo = ({ callId, onClose }) => {
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

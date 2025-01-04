@@ -1,6 +1,7 @@
 import { createContext, useState, useContext, useEffect } from 'react';
 import { callsApi } from '../services/calls.service';
 import { useCallsGrouping } from '../hooks/useCallsGrouping';
+import { AnimatePresence } from 'framer-motion';
 import CallInfo from '../components/CallInfo/CallInfo.jsx';
 const ARCHIVE_ACTIONS = {
   ARCHIVE: true,
@@ -155,7 +156,14 @@ export const CallsProvider = ({ children }) => {
   <CallsContext.Provider value={value}>
       <div className="container">
         {children}
-        {selectedCallId && <CallInfo callId={selectedCallId} onClose={closeCallDetail} />}
+        <AnimatePresence mode="wait">
+          {selectedCallId && (
+            <CallInfo 
+              callId={selectedCallId} 
+              onClose={closeCallDetail} 
+            />
+          )}
+        </AnimatePresence>
       </div>
   </CallsContext.Provider>
   );
