@@ -1,9 +1,10 @@
 import { useCalls } from '../../contexts/CallsContext';
 import ActivityItem from './ActivityItem.jsx';
 import Button, { BUTTON_TYPES } from '../Button/Button.jsx';
-import { Archive } from 'lucide-react';
+import { Archive, PhoneOff } from 'lucide-react';
 import { ConfirmationModal, LoadingModal } from '../Modal/Modals.jsx';
 import { useConfirmation } from '../../hooks/useConfirmation.js';
+import EmptyView from '../EmptyView/EmptyView.jsx';
 
 export const ActivityList = () => {
   const { activeDisplayed, loading, action, resetCalls, archiveAllCalls, archiveProgress } = useCalls();
@@ -13,6 +14,12 @@ export const ActivityList = () => {
     closeConfirm, 
     handleConfirm 
   } = useConfirmation(archiveAllCalls);
+
+  if (activeDisplayed.length === 0) {
+    return (
+      <EmptyView icon={<PhoneOff size={40} />} title="No active calls" />
+    );
+  }
 
   return (
     <div className="flex flex-col space-y-6 p-4">
