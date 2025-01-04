@@ -1,5 +1,5 @@
 import { createContext, useState, useContext, useEffect, useMemo } from 'react';
-import { API_CONFIG } from '../config';
+import { API_CONFIG, HTTP_METHODS } from '../config';
 
 export const CallsContext = createContext();
 
@@ -10,6 +10,7 @@ export const CallsProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   const processCalls = (data) => {
+    console.log('processCalls called')
     const active = [];
     const archived = [];
     
@@ -26,24 +27,25 @@ export const CallsProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const fetchCalls = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(
-          `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.ACTIVITIES}`
-        );
-        const data = await response.json();
-        processCalls(data);
-      } catch (err) {
-        setError(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+
 
     fetchCalls();
   }, []);
 
+  const fetchCalls = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.ACTIVITIES}`
+      );
+      const data = await response.json();
+      processCalls(data);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
   const getCallInfo = async (callId) => {
@@ -58,7 +60,30 @@ export const CallsProvider = ({ children }) => {
     }
   }
 
+  const resetCalls = async () => {
+    try {
+      const response = await fetch(
+        `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.RESET}`,
+        {
+          method: HTTP_METHODS.PATCH,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to reset calls');
+      }
+
+      await fetchCalls();
+    } catch (err) {
+      setError(err);
+    }
+  }
+
   const archiveCall = async (callId) => {
+
     try {
       const response = await fetch(
         `${API_CONFIG.BASE_URL}${API_CONFIG.getActivityEndpoint(callId)}`,
@@ -74,9 +99,12 @@ export const CallsProvider = ({ children }) => {
       if (!response.ok) {
         throw new Error('Failed to archive call');
       }
+
+      const updatedCall = {
+        ...calls.find(call => call.id === callId),
+        is_archived: true
+      };
   
-      // Instead of directly updating calls, process all calls again
-      const updatedCall = await response.json();
       processCalls([...calls, ...archivedCalls].map(call =>
         call.id === callId ? updatedCall : call
       ));
@@ -107,14 +135,45 @@ export const CallsProvider = ({ children }) => {
       
   }, [calls]);
 
+  const consolidatedCalls = useMemo(() => {
+    return groupedCalls.map(dateGroup => {
+      const groupedCalls = dateGroup.calls.reduce((acc, call) => {
+     
+        const key = `${call.from}-${call.to}-${call.direction}-${call.call_type}`;
+        
+        if (!acc[key]) {
+          acc[key] = {
+            ...call,
+            count: 1,
+            lastCallDuration: call.duration,
+            calls: [call]
+          };
+        } else {
+          acc[key].count++;
+          acc[key].lastCallDuration = call.duration;
+          acc[key].calls.push(call);
+        }
+        
+        return acc;
+      }, {});
+
+      return {
+        date: dateGroup.date,
+        calls: Object.values(groupedCalls)
+      };
+    });
+  }, [groupedCalls]);
+
   const value = {
     calls,
     loading,
     error,
     archivedCalls,
     groupedCalls,
+    consolidatedCalls,
     archiveCall,
     getCallInfo,
+    resetCalls
   };
 
   return <CallsContext.Provider value={value}>{children}</CallsContext.Provider>;
