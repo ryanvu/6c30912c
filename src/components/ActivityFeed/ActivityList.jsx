@@ -6,15 +6,25 @@ import { useConfirmation } from '../../hooks/useConfirmation.js';
 import EmptyView from '../EmptyView/EmptyView.jsx';
 import StickyActionBar from '../StickyActionBar/StickActionBar.jsx';
 import { Icons } from '../../utils/icons.js';
+import { useState } from 'react';
 
 export const ActivityList = () => {
-  const { activeDisplayed, loading, action, resetCalls, archiveAllCalls, archiveProgress } = useCalls();
+  const { activeDisplayed, loading, action, archiveAllCalls, archiveProgress } = useCalls();
+  const [confirmCallMsg, setConfirmCallMsg] = useState('');
   const { 
-    isConfirmOpen, 
+    isConfirmOpen: isArchiveConfirmOpen, 
     openConfirm, 
     closeConfirm, 
     handleConfirm 
   } = useConfirmation(archiveAllCalls);
+
+  const { 
+    isConfirmOpen: isCallingConfirmOpen, 
+    openConfirm: openCallingConfirm, 
+    closeConfirm: closeCallingConfirm, 
+    handleConfirm: handleCallingConfirm 
+  } = useConfirmation(() => console.log('hello'));
+
 
   if (activeDisplayed.length === 0) {
     return (
@@ -22,15 +32,24 @@ export const ActivityList = () => {
     );
   }
 
+  const handleCallClick = (call, displayNumber) => {
+    setConfirmCallMsg(`Call ${displayNumber}?`);
+    openCallingConfirm();
+  };
+
   return (
     <div className="flex flex-col space-y-6 p-4">
 
       <LoadingModal isOpen={loading} action={action} progress={archiveProgress}></LoadingModal>
       <ConfirmationModal 
-        isOpen={isConfirmOpen}
-        onConfirm={handleConfirm}
-        onCancel={closeConfirm} 
-        message="Are you sure you want to archive all calls?"
+        isOpen={isArchiveConfirmOpen || isCallingConfirmOpen}
+        onConfirm={isArchiveConfirmOpen ? handleConfirm : handleCallingConfirm}
+        onCancel={isArchiveConfirmOpen ? closeConfirm : closeCallingConfirm}
+        cta={isArchiveConfirmOpen ? "Archive all" : "Call"}
+        message={isArchiveConfirmOpen 
+          ? "Are you sure you want to archive all calls?" 
+          : confirmCallMsg
+        }
       />
 
       <StickyActionBar>
@@ -49,7 +68,11 @@ export const ActivityList = () => {
           </div>
           <div className="flex flex-col space-y-4">
             {calls.map((call) => (
-              <ActivityItem key={call.id} call={call} />
+              <ActivityItem 
+              key={call.id} 
+              call={call}
+              onCallClick={handleCallClick}
+              />
             ))}
           </div>
         </div>

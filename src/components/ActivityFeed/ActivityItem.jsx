@@ -6,7 +6,7 @@ import Button, { BUTTON_TYPES } from '../Button/Button.jsx';
 import { Icons } from '../../utils/icons.js';
 import { callDetailVariants } from '../../animations/animations.js';
 
-const ActivityItem = ({ call }) => {
+const ActivityItem = ({ call, onCallClick }) => {
   const { direction, call_type, count, via, to, from } = call;
   const [showActions, setShowActions] = useState(false);
 
@@ -14,12 +14,13 @@ const ActivityItem = ({ call }) => {
   const expandedStyle = showActions ? 'border-black' : 'border-gray-300';
   const displayNumber = getDisplayNumber(direction, from, to);
 
-  const handleToggleExpand = () => {
+  const handleToggleExpand = (e) => {
+    e.stopPropagation();
     setShowActions(prev => !prev);
   }
 
   return (
-    <div className={"activity-item " + expandedStyle}>
+    <div className={"activity-item " + expandedStyle} onClick={() => onCallClick(call, formatPhoneNumber(displayNumber))}>
 
       <div className="flex items-center gap-2">
         <div>
@@ -43,7 +44,7 @@ const ActivityItem = ({ call }) => {
         </div>
 
         <div
-          onClick={handleToggleExpand}
+          onClick={(e) => handleToggleExpand(e)}
           className="cursor-pointer flex gap-1 items-center bg-black text-white ml-auto text-xs rounded-l-lg rounded-r-none border-r-0 px-2 py-1 transition transform hover:scale-105">
           {formatTime(call.created_at)} 
           {showActions ? <Icons.x size={16} /> : <Icons.info size={16} />}
@@ -111,9 +112,15 @@ const ActivityDetails = ({ call }) => {
 
 const CallDetailPreview = ({ call, status }) => {
   const { openCallDetail } = useCalls();
+
+  const handleOpenDetails = (e) => {
+    e.stopPropagation();
+    openCallDetail(call.id);
+  }
+
   return (
     <motion.div
-      onClick={() => openCallDetail(call.id)}
+      onClick={(e) => handleOpenDetails(e)}
       variants={callDetailVariants.parent}
       initial="initial"
       animate="animate"

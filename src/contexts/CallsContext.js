@@ -17,6 +17,7 @@ export const CallsProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [archiveProgress, setArchiveProgress] = useState(0);
   const [selectedCallId, setSelectedCallId] = useState(null);
+  const [isCalling, setIsCalling] = useState(null);
 
   const { groupedByDateCalls: activeGrouped, displayedCalls: activeDisplayed } = useCallsGrouping(calls);
   const { groupedByDateCalls: archivedGrouped, displayedCalls: archivedDisplayed } = useCallsGrouping(archivedCalls);
@@ -163,6 +164,9 @@ export const CallsProvider = ({ children }) => {
               onClose={closeCallDetail} 
             />
           )}
+          {
+            isCalling && <span>Calling</span>
+          }
         </AnimatePresence>
       </div>
   </CallsContext.Provider>

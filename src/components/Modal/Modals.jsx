@@ -24,7 +24,7 @@ export const LoadingModal = ({ isOpen, action, progress }) => (
   </Modal>
 );
 
-export const ConfirmationModal = ({ isOpen, onConfirm, onCancel, message }) => (
+export const ConfirmationModal = ({ isOpen, onConfirm, onCancel, message, cta }) => (
   <Modal isOpen={isOpen}>
     <div className="bg-white p-6 rounded-lg shadow-lg flex flex-col gap-4">
       <p className="text-gray-700">{message}</p>
@@ -39,7 +39,7 @@ export const ConfirmationModal = ({ isOpen, onConfirm, onCancel, message }) => (
           onClick={onConfirm} 
           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
-          Confirm
+          { cta || 'Confirm' }
         </button>
       </div>
     </div>
