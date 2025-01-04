@@ -1,11 +1,11 @@
 import { useCalls } from '../../contexts/CallsContext';
 import ActivityItem from './ActivityItem.jsx';
 import Button, { BUTTON_TYPES } from '../Button/Button.jsx';
-import { Archive, PhoneOff } from 'lucide-react';
 import { ConfirmationModal, LoadingModal } from '../Modal/Modals.jsx';
 import { useConfirmation } from '../../hooks/useConfirmation.js';
 import EmptyView from '../EmptyView/EmptyView.jsx';
 import StickyActionBar from '../StickyActionBar/StickActionBar.jsx';
+import { Icons } from '../../utils/icons.js';
 
 export const ActivityList = () => {
   const { activeDisplayed, loading, action, resetCalls, archiveAllCalls, archiveProgress } = useCalls();
@@ -18,7 +18,7 @@ export const ActivityList = () => {
 
   if (activeDisplayed.length === 0) {
     return (
-      <EmptyView icon={<PhoneOff size={40} />} title="No active calls" />
+      <EmptyView icon={<Icons.phoneOff size={40} />} title="No active calls" />
     );
   }
 
@@ -34,7 +34,7 @@ export const ActivityList = () => {
       />
 
       <StickyActionBar>
-        <Button type={BUTTON_TYPES.PRIMARY} cta="Archive all calls" icon={<Archive />} onClick={() => openConfirm()} />
+        <Button type={BUTTON_TYPES.PRIMARY} cta="Archive all calls" icon={<Icons.archive />} onClick={() => openConfirm()} />
       </StickyActionBar>
 
       <button onClick={() => resetCalls()} className="btn btn-primary">Reset</button>

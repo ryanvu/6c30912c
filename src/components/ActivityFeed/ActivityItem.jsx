@@ -1,9 +1,9 @@
-import { PhoneIncoming, PhoneOutgoing, Archive, ArchiveRestore, Info, X } from 'lucide-react';
-import { CALL_DIRECTIONS, CALL_TYPE, determineCallStatus, formatDuration, formatPhoneNumber, formatTime } from '../../utils';
+import { CALL_DIRECTIONS, CALL_TYPE, determineCallStatus, formatDuration, formatPhoneNumber, formatTime } from '../../utils/utils.js';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCalls } from '../../contexts/CallsContext';
 import Button, { BUTTON_TYPES } from '../Button/Button.jsx';
+import { Icons } from '../../utils/icons.js';
 
 const getDisplayNumber = (direction, from, to) => {
   if (direction === CALL_DIRECTIONS.INBOUND) {
@@ -28,9 +28,9 @@ const ActivityItem = ({ call }) => {
       <div className="flex items-center gap-2">
         <div>
           {direction === CALL_DIRECTIONS.INBOUND ? (
-            <PhoneIncoming className={iconColor} size={18} />
+            <Icons.phoneIncoming className={iconColor} size={18} />
           ) : (
-            <PhoneOutgoing className={iconColor} size={18} />
+            <Icons.phoneOutgoing className={iconColor} size={18} />
           )}
         </div>
         
@@ -39,16 +39,18 @@ const ActivityItem = ({ call }) => {
             <span className="font-bold">{formatPhoneNumber(displayNumber)}</span>
             { count > 1 && <span className="text-gray-400 text-xs">({count})</span> }
           </div>
-          <span className="text-gray-400 text-xs italic">
-            via {formatPhoneNumber(via)}
-          </span>
+          { via !== from &&
+            <span className="text-gray-400 text-xs italic">
+              via {formatPhoneNumber(via)}
+            </span>
+          }
         </div>
 
         <div
           onClick={handleToggleExpand}
           className="cursor-pointer flex gap-1 items-center bg-black text-white ml-auto text-xs rounded-l-lg rounded-r-none border-r-0 px-2 py-1 transition transform hover:scale-105">
           {formatTime(call.created_at)} 
-          {showActions ? <X size={16} /> : <Info size={16} />}
+          {showActions ? <Icons.x size={16} /> : <Icons.info size={16} />}
         </div>
       </div>
       <AnimatePresence mode="wait">
@@ -100,14 +102,14 @@ const ActivityDetails = ({ call }) => {
         onClick={handleArchive} 
         type={BUTTON_TYPES.ICON}
         cta="Archive"
-        icon={<Archive size={16} />}
+        icon={<Icons.archive size={16} />}
       ></Button>}
       {is_archived && 
       <Button 
         onClick={handleRestore} 
         type={BUTTON_TYPES.ICON}
         cta="Restore"
-        icon={<ArchiveRestore size={16} />}
+        icon={<Icons.archiveRestore size={16} />}
       ></Button>}
     </div>
   )
