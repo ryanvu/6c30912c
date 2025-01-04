@@ -1,8 +1,9 @@
-import { PhoneIncoming, PhoneOutgoing, Archive, Info, X } from 'lucide-react';
+import { PhoneIncoming, PhoneOutgoing, Archive, ArchiveRestore, Info, X } from 'lucide-react';
 import { CALL_DIRECTIONS, CALL_TYPE, determineCallStatus, formatDuration, formatPhoneNumber, formatTime } from '../../utils';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCalls } from '../../contexts/CallsContext';
+import Button, { BUTTON_TYPES } from '../Button/Button.jsx';
 
 const getDisplayNumber = (direction, from, to) => {
   if (direction === CALL_DIRECTIONS.INBOUND) {
@@ -11,7 +12,7 @@ const getDisplayNumber = (direction, from, to) => {
   return to;
 };
 
-const ActivityItem = ({ call, i }) => {
+const ActivityItem = ({ call }) => {
   const { direction, call_type, count, via, to, from } = call;
   const [showActions, setShowActions] = useState(false);
 
@@ -23,7 +24,7 @@ const ActivityItem = ({ call, i }) => {
   }
 
   return (
-    <div className="flex-col items-center gap-2 pl-4 py-4 rounded-md border-gray-200 border-2 cursor-pointer transition duration-300">
+    <div className="flex-col items-center gap-2 pl-4 py-4 rounded-md border-gray-200 border-2 transition duration-300">
       <div className="flex items-center gap-2">
         <div>
           {direction === CALL_DIRECTIONS.INBOUND ? (
@@ -45,7 +46,7 @@ const ActivityItem = ({ call, i }) => {
 
         <div
           onClick={handleToggleExpand}
-          className="flex gap-1 items-center bg-black text-white ml-auto text-xs rounded-l-lg rounded-r-none border-r-0 px-2 py-1 transition transform hover:scale-105">
+          className="cursor-pointer flex gap-1 items-center bg-black text-white ml-auto text-xs rounded-l-lg rounded-r-none border-r-0 px-2 py-1 transition transform hover:scale-105">
           {formatTime(call.created_at)} 
           {showActions ? <X size={16} /> : <Info size={16} />}
         </div>
@@ -94,8 +95,20 @@ const ActivityDetails = ({ call }) => {
         </div>
       </div>
  
-      {!is_archived && <button onClick={handleArchive}>Archive</button>}
-      {is_archived && <button onClick={handleRestore}>Restore</button>}
+      {!is_archived && 
+      <Button 
+        onClick={handleArchive} 
+        type={BUTTON_TYPES.ICON}
+        cta="Archive"
+        icon={<Archive size={16} />}
+      ></Button>}
+      {is_archived && 
+      <Button 
+        onClick={handleRestore} 
+        type={BUTTON_TYPES.ICON}
+        cta="Restore"
+        icon={<ArchiveRestore size={16} />}
+      ></Button>}
     </div>
   )
 }
