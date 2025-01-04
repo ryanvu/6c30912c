@@ -58,7 +58,7 @@ const ActivityItem = ({ call, i }) => {
 const ActivityDetails = ({ call }) => {
   const { archiveCall } = useCalls();
 
-  const { via, call_type, duration } = call;
+  const { via, call_type, duration, is_archived } = call;
   console.log(call);
 
   const handleArchive = async () => {
@@ -71,7 +71,8 @@ const ActivityDetails = ({ call }) => {
         <span>{call_type}</span>
         <span>{formatDuration(duration)}</span>
       </div>
-      <button className="btn btn-secondary" onClick={handleArchive}>Archive</button>
+      {!is_archived && <button className="btn btn-secondary" onClick={handleArchive}>Archive</button>}
+      {is_archived && <button className="btn btn-secondary" onClick={handleArchive}>Restore</button>}
     </div>
   )
 }

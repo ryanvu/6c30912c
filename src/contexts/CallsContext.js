@@ -1,5 +1,6 @@
 import { createContext, useState, useContext, useEffect, useMemo } from 'react';
-import { API_CONFIG, HTTP_METHODS } from '../config';
+import { callsApi } from '../services/calls.service';
+import { useCallsGrouping } from '../hooks/useCallsGrouping';
 
 export const CallsContext = createContext();
 
@@ -9,6 +10,9 @@ export const CallsProvider = ({ children }) => {
   const [archivedCalls, setArchivedCalls] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [archiveProgress, setArchiveProgress] = useState(0);
+  const { groupedByDateCalls: activeGrouped, displayedCalls: activeDisplayed } = useCallsGrouping(calls);
+  const { groupedByDateCalls: archivedGrouped, displayedCalls: archivedDisplayed } = useCallsGrouping(archivedCalls);
 
   const processCalls = (data) => {
     const active = [];
@@ -33,10 +37,7 @@ export const CallsProvider = ({ children }) => {
   const fetchCalls = async () => {
     try {
       setLoading(true);
-      const response = await fetch(
-        `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.ACTIVITIES}`
-      );
-      const data = await response.json();
+      const data = await callsApi.fetchCalls();
       processCalls(data);
     } catch (err) {
       setError(err);
@@ -47,10 +48,7 @@ export const CallsProvider = ({ children }) => {
 
   const getCallInfo = async (callId) => {
     try {
-      const response = await fetch(
-        `${API_CONFIG.BASE_URL}${API_CONFIG.getActivityEndpoint(callId)}`
-      );
-      const data = await response.json();
+      const data = await callsApi.getCallInfo(callId);
       return data;
     } catch (err) {
       setError(err);
@@ -61,19 +59,8 @@ export const CallsProvider = ({ children }) => {
     setLoading(true);
     setAction('Resetting calls...');
     try {
-      const response = await fetch(
-        `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.RESET}`,
-        {
-          method: HTTP_METHODS.PATCH,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to reset calls');
-      }
+      const success = await callsApi.resetCalls();
+      if (!success) throw new Error('Failed to archive call');
 
       await fetchCalls();
     } catch (err) {
@@ -88,20 +75,8 @@ export const CallsProvider = ({ children }) => {
     setLoading(true);
     setAction('Archiving call...');
     try {
-      const response = await fetch(
-        `${API_CONFIG.BASE_URL}${API_CONFIG.getActivityEndpoint(callId)}`,
-        {
-          method: HTTP_METHODS.PATCH,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ is_archived: true })
-        }
-      );
-  
-      if (!response.ok) {
-        throw new Error('Failed to archive call');
-      }
+      const success = await callsApi.archiveCall(callId);
+      if (!success) throw new Error('Failed to archive call');
 
       const updatedCall = {
         ...calls.find(call => call.id === callId),
@@ -119,67 +94,37 @@ export const CallsProvider = ({ children }) => {
     }
   };
 
-  const groupedByDateCalls = useMemo(() => {
-  
-    const groupedByDateCalls = calls.reduce((acc, call) => {
-      const date = new Date(call.created_at).toLocaleDateString('en-US', {
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric'
+  const archiveAllCalls = async () => {
+    setLoading(true);
+    setAction('Archiving all calls...');
+    try {
+      const callIds = calls.map(call => call.id);
+      await callsApi.archiveAllCalls(callIds, (progress) => {
+        setArchiveProgress(progress);
       });
-      if (!acc[date]) acc[date] = [];
-      acc[date].push(call);
-      return acc;
-    }, {});
+      await fetchCalls();
+    } catch (err) {
+      setError(err);
+    } finally {
+      setAction(null);
+      setLoading(false);
+      setArchiveProgress(0);
+    }
+  };
   
-    return Object.entries(groupedByDateCalls)
-      .sort((a, b) => new Date(b[0]) - new Date(a[0]))
-      .map(([date, calls]) => ({
-        date,
-        calls: calls.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-      }));
-      
-  }, [calls]);
-
-  const displayedCalls = useMemo(() => {
-    return groupedByDateCalls.map(dateGroup => {
-      const groupedByDateCalls = dateGroup.calls.reduce((acc, call) => {
-     
-        const key = `${call.from}-${call.to}-${call.direction}-${call.call_type}`;
-        
-        if (!acc[key]) {
-          acc[key] = {
-            ...call,
-            count: 1,
-            lastCallDuration: call.duration,
-            calls: [call]
-          };
-        } else {
-          acc[key].count++;
-          acc[key].lastCallDuration = call.duration;
-          acc[key].calls.push(call);
-        }
-        
-        return acc;
-      }, {});
-
-      return {
-        date: dateGroup.date,
-        calls: Object.values(groupedByDateCalls)
-      };
-    });
-  }, [groupedByDateCalls]);
-
   const value = {
     action,
     calls,
     loading,
     error,
-    archivedCalls,
-    groupedByDateCalls,
-    displayedCalls,
+    activeGrouped,
+    activeDisplayed,
+    archivedGrouped,
+    archivedDisplayed,
+    archiveProgress,
     archiveCall,
     getCallInfo,
+    archiveAllCalls,
     resetCalls
   };
 
