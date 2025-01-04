@@ -91,3 +91,6 @@ header svg {
   @apply flex-col items-center gap-2 pl-4 py-4 rounded-md border-2 transition duration-300;
 }
 
+.call-info {
+  z-index: 1000;
+}

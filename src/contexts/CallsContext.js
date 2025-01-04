@@ -1,7 +1,7 @@
-import { createContext, useState, useContext, useEffect, useMemo } from 'react';
+import { createContext, useState, useContext, useEffect } from 'react';
 import { callsApi } from '../services/calls.service';
 import { useCallsGrouping } from '../hooks/useCallsGrouping';
-
+import CallInfo from '../components/CallInfo/CallInfo.jsx';
 const ARCHIVE_ACTIONS = {
   ARCHIVE: true,
   RESTORE: false,
@@ -15,6 +15,8 @@ export const CallsProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [archiveProgress, setArchiveProgress] = useState(0);
+  const [selectedCallId, setSelectedCallId] = useState(null);
+
   const { groupedByDateCalls: activeGrouped, displayedCalls: activeDisplayed } = useCallsGrouping(calls);
   const { groupedByDateCalls: archivedGrouped, displayedCalls: archivedDisplayed } = useCallsGrouping(archivedCalls);
 
@@ -124,6 +126,9 @@ export const CallsProvider = ({ children }) => {
 
   const archiveAllCalls = () => updateAllCallsArchiveStatus(ARCHIVE_ACTIONS.ARCHIVE);
   const restoreAllCalls = () => updateAllCallsArchiveStatus(ARCHIVE_ACTIONS.RESTORE);
+
+  const openCallDetail = (callId) => setSelectedCallId(callId);
+  const closeCallDetail = () => setSelectedCallId(null);
   
   const value = {
     action,
@@ -135,17 +140,23 @@ export const CallsProvider = ({ children }) => {
     archivedGrouped,
     archivedDisplayed,
     archiveProgress,
+    selectedCallId,
     archiveCall,
     archiveAllCalls,
     restoreCall,
     restoreAllCalls,
     getCallInfo,
-    resetCalls
+    resetCalls,
+    openCallDetail,
+    closeCallDetail,
   };
 
   return (
   <CallsContext.Provider value={value}>
-    {children}
+      <div className="container">
+        {children}
+        {selectedCallId && <CallInfo callId={selectedCallId} onClose={closeCallDetail} />}
+      </div>
   </CallsContext.Provider>
   );
 };

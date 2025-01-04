@@ -1,17 +1,10 @@
-import { CALL_DIRECTIONS, CALL_TYPE, determineCallStatus, formatDuration, formatPhoneNumber, formatTime } from '../../utils/utils.js';
+import { CALL_DIRECTIONS, CALL_TYPE, determineCallStatus, formatDuration, formatPhoneNumber, formatTime, getDisplayNumber } from '../../utils/utils.js';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCalls } from '../../contexts/CallsContext';
 import Button, { BUTTON_TYPES } from '../Button/Button.jsx';
 import { Icons } from '../../utils/icons.js';
 import { callDetailVariants } from '../../animations/animations.js';
-
-const getDisplayNumber = (direction, from, to) => {
-  if (direction === CALL_DIRECTIONS.INBOUND) {
-    return from;
-  }
-  return to;
-};
 
 const ActivityItem = ({ call }) => {
   const { direction, call_type, count, via, to, from } = call;
@@ -117,8 +110,10 @@ const ActivityDetails = ({ call }) => {
 }
 
 const CallDetailPreview = ({ call, status }) => {
+  const { openCallDetail } = useCalls();
   return (
-    <motion.div 
+    <motion.div
+      onClick={() => openCallDetail(call.id)}
       variants={callDetailVariants.parent}
       initial="initial"
       animate="animate"

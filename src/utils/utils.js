@@ -16,6 +16,13 @@ export const formatPhoneNumber = (phoneNumber) => {
   return numberString;
 };
 
+export const getDisplayNumber = (direction, from, to) => {
+  if (direction === CALL_DIRECTIONS.INBOUND) {
+    return from;
+  }
+  return to;
+};
+
 export const formatTime = (dateString) => {
 
   const date = new Date(dateString);
