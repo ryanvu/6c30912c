@@ -5,6 +5,7 @@ import { Archive, PhoneOff } from 'lucide-react';
 import { ConfirmationModal, LoadingModal } from '../Modal/Modals.jsx';
 import { useConfirmation } from '../../hooks/useConfirmation.js';
 import EmptyView from '../EmptyView/EmptyView.jsx';
+import StickyActionBar from '../StickyActionBar/StickActionBar.jsx';
 
 export const ActivityList = () => {
   const { activeDisplayed, loading, action, resetCalls, archiveAllCalls, archiveProgress } = useCalls();
@@ -31,8 +32,11 @@ export const ActivityList = () => {
         onCancel={closeConfirm} 
         message="Are you sure you want to archive all calls?"
       />
-      <Button type={BUTTON_TYPES.PRIMARY} cta="Archive all calls" icon={<Archive />} onClick={() => openConfirm()} />
-      
+
+      <StickyActionBar>
+        <Button type={BUTTON_TYPES.PRIMARY} cta="Archive all calls" icon={<Archive />} onClick={() => openConfirm()} />
+      </StickyActionBar>
+
       <button onClick={() => resetCalls()} className="btn btn-primary">Reset</button>
       {activeDisplayed.map(({ date, calls }) => (
         <div key={date} className="flex flex-col space-y-4">
