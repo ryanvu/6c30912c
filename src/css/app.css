@@ -1,3 +1,6 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 #app {
   position: absolute;
   display: flex;
@@ -17,9 +20,13 @@
   background: white;
   border-radius: 3px;
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, .9);
+  overflow-y: scroll;
+  scrollbar-width: none;
+  position: relative;
 }
 
 #app .container-view {
   padding: 20px;
+
 }
 

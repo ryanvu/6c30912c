@@ -1,6 +1,5 @@
 import React from 'react';
 import { CallsProvider } from './contexts/CallsContext'
-
 import Header from './Header.jsx';
 
 const App = () => {

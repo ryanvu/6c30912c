@@ -1,12 +1,29 @@
-import { createContext, useState, useContext, useEffect } from 'react';
+import { createContext, useState, useContext, useEffect, useMemo } from 'react';
 import { API_CONFIG } from '../config';
 
 export const CallsContext = createContext();
 
 export const CallsProvider = ({ children }) => {
   const [calls, setCalls] = useState([]);
+  const [archivedCalls, setArchivedCalls] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const processCalls = (data) => {
+    const active = [];
+    const archived = [];
+    
+    data.forEach(call => {
+      if (call.is_archived) {
+        archived.push(call);
+      } else {
+        active.push(call);
+      }
+    });
+  
+    setCalls(active);
+    setArchivedCalls(archived);
+  };
 
   useEffect(() => {
     const fetchCalls = async () => {
@@ -16,7 +33,7 @@ export const CallsProvider = ({ children }) => {
           `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.ACTIVITIES}`
         );
         const data = await response.json();
-        setCalls(data);
+        processCalls(data);
       } catch (err) {
         setError(err);
       } finally {
@@ -26,6 +43,8 @@ export const CallsProvider = ({ children }) => {
 
     fetchCalls();
   }, []);
+
+
 
   const getCallInfo = async (callId) => {
     try {
@@ -51,13 +70,14 @@ export const CallsProvider = ({ children }) => {
           body: JSON.stringify({ is_archived: true })
         }
       );
-
+  
       if (!response.ok) {
         throw new Error('Failed to archive call');
       }
-
+  
+      // Instead of directly updating calls, process all calls again
       const updatedCall = await response.json();
-      setCalls(calls.map(call =>
+      processCalls([...calls, ...archivedCalls].map(call =>
         call.id === callId ? updatedCall : call
       ));
     } catch (err) {
@@ -65,12 +85,32 @@ export const CallsProvider = ({ children }) => {
     }
   };
 
+  const groupedCalls = useMemo(() => {
+  
+    const groupedCalls = calls.reduce((acc, call) => {
+      const date = new Date(call.created_at).toLocaleDateString();
+      if (!acc[date]) acc[date] = [];
+      acc[date].push(call);
+      return acc;
+    }, {});
+  
+    return Object.entries(groupedCalls)
+      .sort((a, b) => new Date(b[0]) - new Date(a[0]))
+      .map(([date, calls]) => ({
+        date,
+        calls: calls.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+      }));
+      
+  }, [calls]);
+
   const value = {
     calls,
     loading,
     error,
+    archivedCalls,
+    groupedCalls,
     archiveCall,
-    getCallInfo
+    getCallInfo,
   };
 
   return <CallsContext.Provider value={value}>{children}</CallsContext.Provider>;
