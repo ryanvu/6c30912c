@@ -23,8 +23,8 @@ body {
 }
 
 header {
-  height: auto;     /* Changed from fixed 40px */
-  min-height: 80px; /* Give it a minimum height */
+  height: auto;
+  min-height: 80px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -74,10 +74,6 @@ header svg {
 
 #app .container > header {
   z-index: 100;
-}
-
-#app .container .sticky-action-header {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 #modal-root .container {
