@@ -1,6 +1,12 @@
+// webpack.config.js
+const path = require('path');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 
 module.exports = {
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    publicPath: '/'
+  },
   module: {
     rules: [
       {
@@ -14,7 +20,11 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: [ 'style-loader', 'css-loader' ]
+        use: [
+          'style-loader',
+          'css-loader',
+          'postcss-loader'
+        ]
       },
       {
         test: /\.(js|jsx)$/,

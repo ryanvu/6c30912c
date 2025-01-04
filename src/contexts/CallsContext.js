@@ -1,31 +1,52 @@
-import { createContext, useState, useContext, useEffect } from 'react';
-import { API_CONFIG } from '../config';
+import { createContext, useState, useContext, useEffect, useMemo } from 'react';
+import { API_CONFIG, HTTP_METHODS } from '../config';
 
 export const CallsContext = createContext();
 
 export const CallsProvider = ({ children }) => {
   const [calls, setCalls] = useState([]);
+  const [archivedCalls, setArchivedCalls] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchCalls = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(
-          `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.ACTIVITIES}`
-        );
-        const data = await response.json();
-        setCalls(data);
-      } catch (err) {
-        setError(err);
-      } finally {
-        setLoading(false);
+  const processCalls = (data) => {
+    console.log('processCalls called')
+    const active = [];
+    const archived = [];
+    
+    data.forEach(call => {
+      if (call.is_archived) {
+        archived.push(call);
+      } else {
+        active.push(call);
       }
-    };
+    });
+  
+    setCalls(active);
+    setArchivedCalls(archived);
+  };
+
+  useEffect(() => {
+
 
     fetchCalls();
   }, []);
+
+  const fetchCalls = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.ACTIVITIES}`
+      );
+      const data = await response.json();
+      processCalls(data);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   const getCallInfo = async (callId) => {
     try {
@@ -39,7 +60,30 @@ export const CallsProvider = ({ children }) => {
     }
   }
 
+  const resetCalls = async () => {
+    try {
+      const response = await fetch(
+        `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.RESET}`,
+        {
+          method: HTTP_METHODS.PATCH,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to reset calls');
+      }
+
+      await fetchCalls();
+    } catch (err) {
+      setError(err);
+    }
+  }
+
   const archiveCall = async (callId) => {
+
     try {
       const response = await fetch(
         `${API_CONFIG.BASE_URL}${API_CONFIG.getActivityEndpoint(callId)}`,
@@ -51,13 +95,17 @@ export const CallsProvider = ({ children }) => {
           body: JSON.stringify({ is_archived: true })
         }
       );
-
+  
       if (!response.ok) {
         throw new Error('Failed to archive call');
       }
 
-      const updatedCall = await response.json();
-      setCalls(calls.map(call =>
+      const updatedCall = {
+        ...calls.find(call => call.id === callId),
+        is_archived: true
+      };
+  
+      processCalls([...calls, ...archivedCalls].map(call =>
         call.id === callId ? updatedCall : call
       ));
     } catch (err) {
@@ -65,12 +113,67 @@ export const CallsProvider = ({ children }) => {
     }
   };
 
+  const groupedCalls = useMemo(() => {
+  
+    const groupedCalls = calls.reduce((acc, call) => {
+      const date = new Date(call.created_at).toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric'
+      });
+      if (!acc[date]) acc[date] = [];
+      acc[date].push(call);
+      return acc;
+    }, {});
+  
+    return Object.entries(groupedCalls)
+      .sort((a, b) => new Date(b[0]) - new Date(a[0]))
+      .map(([date, calls]) => ({
+        date,
+        calls: calls.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+      }));
+      
+  }, [calls]);
+
+  const consolidatedCalls = useMemo(() => {
+    return groupedCalls.map(dateGroup => {
+      const groupedCalls = dateGroup.calls.reduce((acc, call) => {
+     
+        const key = `${call.from}-${call.to}-${call.direction}-${call.call_type}`;
+        
+        if (!acc[key]) {
+          acc[key] = {
+            ...call,
+            count: 1,
+            lastCallDuration: call.duration,
+            calls: [call]
+          };
+        } else {
+          acc[key].count++;
+          acc[key].lastCallDuration = call.duration;
+          acc[key].calls.push(call);
+        }
+        
+        return acc;
+      }, {});
+
+      return {
+        date: dateGroup.date,
+        calls: Object.values(groupedCalls)
+      };
+    });
+  }, [groupedCalls]);
+
   const value = {
     calls,
     loading,
     error,
+    archivedCalls,
+    groupedCalls,
+    consolidatedCalls,
     archiveCall,
-    getCallInfo
+    getCallInfo,
+    resetCalls
   };
 
   return <CallsContext.Provider value={value}>{children}</CallsContext.Provider>;
