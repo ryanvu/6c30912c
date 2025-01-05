@@ -25,7 +25,7 @@ function Button({ type = BUTTON_TYPES.PRIMARY, color = BUTTON_COLORS.DEFAULT, ct
   };
 
   const colorVariants = {
-    [BUTTON_COLORS.DEFAULT]: 'border-gray-300 text-gray-500 hover:bg-gray-100',
+    [BUTTON_COLORS.DEFAULT]: 'text-gray-500 hover:bg-gray-100',
     [BUTTON_COLORS.SUCCESS]: 'border-green-500 bg-green-500 text-white hover:bg-green-600 hover:border-green-600',
     [BUTTON_COLORS.DANGER]: 'border-red-500 bg-red-500 text-white hover:bg-red-600 hover:border-red-600',
     [BUTTON_COLORS.CALL]: 'bg-gray-200 text-gray-500 hover:bg-gray-100',

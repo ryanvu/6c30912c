@@ -13,6 +13,7 @@ const ActivityItem = ({ call, onCallClick }) => {
   const iconColor = call_type === CALL_TYPE.MISSED ? 'text-red-500' : 'text-green-500';
   const expandedStyle = showActions ? 'border-black' : 'border-gray-300';
   const displayNumber = getDisplayNumber(direction, from, to);
+  const displayNumberColor = call_type === CALL_TYPE.MISSED ? 'text-red-500' : 'text-black';
 
   const handleToggleExpand = (e) => {
     e.stopPropagation();
@@ -21,7 +22,6 @@ const ActivityItem = ({ call, onCallClick }) => {
 
   return (
     <div className={"activity-item " + expandedStyle} onClick={() => onCallClick(call, formatPhoneNumber(displayNumber))}>
-
       <div className="flex items-center gap-2">
         <div>
           {direction === CALL_DIRECTIONS.INBOUND ? (
@@ -33,7 +33,7 @@ const ActivityItem = ({ call, onCallClick }) => {
         
         <div className="flex flex-col">
           <div className="flex flex-row gap-2 items-center">
-            <span className="font-bold">{formatPhoneNumber(displayNumber)}</span>
+            <span className={displayNumberColor + ' font-bold'}>{formatPhoneNumber(displayNumber)}</span>
             { count > 1 && <span className="text-gray-400 text-xs">({count})</span> }
           </div>
           { via !== from &&
@@ -128,21 +128,21 @@ const CallDetailPreview = ({ call, status }) => {
       animate="animate"
       whileHover="hover"
       transition={{ duration: 0.5 }}
-      className="flex text-xs text-gray-600 py-1 items-center gap-2 cursor-pointer"
+      className="flex justify-between pr-2 text-xs text-gray-600 py-1 items-center gap-2 cursor-pointer border-l-2 border-black pl-2 hover:bg-gray-50 rounded-r-lg"
     > 
-      <motion.div
-        variants={callDetailVariants.icon}
-      >
-        <Icons.view size={18}/>
-      </motion.div>
-
-      <div className="flex flex-col border-l-2 border-black pl-2">
+      <div className="flex flex-col">
         <span>{formatTime(call.created_at)}</span>
         <span className={status.color}>
           {status.label} 
           <span className="italic">{formatDuration(call.duration)}</span>
         </span>
       </div>
+
+      <motion.div
+        variants={callDetailVariants.icon}
+      >
+        <Icons.view size={18}/>
+      </motion.div>
     </motion.div>
   )
 }
