@@ -66,4 +66,4 @@
 > Call simulation
 - Clicking on an `ActivityItem` will open a confirmation modal asking if you want to call the person 
 - If the call connects or not depends on the `randomAnswerOrDeclined` function
-- `hooks/useCallStat.js` and `contexts/CallsContext.js` are used to manage the state of the call
+- `hooks/useCallState.js` and `contexts/CallsContext.js` are used to manage the state of the call
