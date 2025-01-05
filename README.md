@@ -1,4 +1,4 @@
-## Decisions
+## Decisions and Implementation
 
 > Code Organization
 - Using a single file for all of the logic (`contexts/CallsContext.js`)
@@ -60,3 +60,10 @@
 > Unknown States
 > - Fallback for unrecognized call types
 > - Gray status indicates indeterminate state
+
+## Features
+
+> Call simulation
+- Clicking on an `ActivityItem` will open a confirmation modal asking if you want to call the person 
+- If the call connects or not depends on the `randomAnswerOrDeclined` function
+- `hooks/useCallStat.js` and `contexts/CallsContext.js` are used to manage the state of the call
