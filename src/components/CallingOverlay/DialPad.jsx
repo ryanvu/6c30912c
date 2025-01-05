@@ -29,11 +29,11 @@ const DialPad = () => {
   return (
     <div className="flex flex-col items-center justify-center h-full gap-8">
 
-      <div className="flex items-center gap-2 justify-center">
+      <div className="flex items-center gap-2 justify-center w-full relative">
         {numberToDial && (
           <button 
             onClick={handleBackspace}
-            className="p-2 hover:bg-gray-100 rounded-full"
+            className="p-2 hover:bg-gray-100 rounded-full absolute left-10"
           >
             <Icons.backspace size={24} className="text-gray-500" />
           </button>
