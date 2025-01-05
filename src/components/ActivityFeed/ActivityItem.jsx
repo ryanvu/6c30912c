@@ -118,7 +118,7 @@ const ActivityDetails = ({ call }) => {
 
 const CallDetailPreview = ({ call, status }) => {
   const { openCallDetail } = useCalls();
-
+  
   const handleOpenDetails = (e) => {
     e.stopPropagation();
     openCallDetail(call.id);

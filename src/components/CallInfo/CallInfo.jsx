@@ -6,9 +6,12 @@ import { useCalls } from '../../contexts/CallsContext';
 import { motion } from 'framer-motion';
 import { callInfoVariants } from '../../animations/animations';
 import Button, { BUTTON_TYPES } from '../Button/Button.jsx';
+import { useToastContext } from '../../contexts/ToastContext.js';
 
 const CallInfo = ({ callId, onClose }) => {
   const { getCallInfo, archiveCall, restoreCall } = useCalls();
+  const { showToast } = useToastContext();
+  
   const [callData, setCallData] = useState(null);
 
   useEffect(() => {
@@ -38,11 +41,13 @@ const CallInfo = ({ callId, onClose }) => {
 
   const handleArchive = async () => {
     await archiveCall(callId);
+    showToast({ message: 'Call archived' });
     onClose();
   }
 
   const handleRestore = async () => {
     await restoreCall(callId);
+    showToast({ message: 'Call restored' });
     onClose();
   }
 
