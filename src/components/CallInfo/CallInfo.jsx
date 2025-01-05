@@ -55,8 +55,6 @@ const CallInfo = ({ callId, onClose }) => {
     onClose();
   }
 
-  console.log(participants);
-
   return (
     <motion.div
       variants={callInfoVariants.parent}
@@ -71,16 +69,11 @@ const CallInfo = ({ callId, onClose }) => {
             <div className="flex gap-3">
               <div className="flex flex-col items-center gap-2">
                 <Avatar contact={participants.primary.contact} size="lg" />
-                {direction === CALL_DIRECTIONS.INBOUND ? (
-                  <Icons.phoneIncoming className={status.color} size={20} />
-                ) : (
-                  <Icons.phoneOutgoing className={status.color} size={20} />
-                )}
               </div>
               <div>
                 <div className="flex flex-col">
                   <div className="flex gap-2 items-center">
-                    <h2 className="text-xl font-bold">
+                    <h2 className="text-lg font-bold">
                       {participants.primary.isContact ? 
                         participants.primary.contact.name : 
                         formatPhoneNumber(participants.primary.display)}
@@ -97,6 +90,11 @@ const CallInfo = ({ callId, onClose }) => {
                     </span>
                   }
                   <div className="flex gap-1 items-center mt-1">
+                    {direction === CALL_DIRECTIONS.INBOUND ? (
+                      <Icons.phoneIncoming className={status.color} size={14} />
+                      ) : (
+                      <Icons.phoneOutgoing className={status.color} size={14} />
+                    )}
                     <span className={`text-sm ${status.color}`}>{status.label}</span>
                     {duration > 0 && (
                       <span className="text-sm text-gray-500 ml-2">
@@ -119,50 +117,48 @@ const CallInfo = ({ callId, onClose }) => {
         <div className="p-6 space-y-6">
           {/* Basic Info */}
           <div className="grid grid-cols-[100px_1fr] gap-y-4 text-sm">
-            <span className="text-gray-500 font-bold">Time</span>
-            <span>{formatTime(created_at)}</span>
-            
-            <span className="text-gray-500 font-bold">Via</span>
-            <div className="flex items-center gap-2">
-              <Avatar contact={participants.via.contact} size="sm" />
-              <span>
-                {participants.via.isContact ? 
-                  participants.via.contact.name : 
-                  formatPhoneNumber(participants.via.display)}
-              </span>
+            {/* Time */}
+            <div className="flex flex-col gap-1">
+              <span className="text-gray-500 font-bold">Time</span>
+              <span>{formatTime(created_at)}</span>
+            </div>
+            {/* Via */}
+            <div className="flex flex-col gap-1">
+              <span className="text-gray-500 font-bold">Via</span>
+              <div className="flex items-center gap-2">
+                <Avatar contact={participants.via.contact} size="sm" />
+                <span>
+                  {participants.via.isContact ? 
+                    participants.via.contact.name : 
+                    formatPhoneNumber(participants.via.display)}
+                </span>
+              </div>
             </div>
 
             {direction === CALL_DIRECTIONS.INBOUND ? (
-              <>
+              <div className="flex flex-col gap-1">
                 <span className="text-gray-500 font-bold">From</span>
                 <div className="flex items-center gap-2">
                   <Avatar contact={participants.from.contact} size="sm" />
                   <span>
                     {participants.from.isContact ? 
                       participants.from.contact.name : 
-                      formatPhoneNumber(participants.from.display)}
+                      formatPhoneNumber(participants.from.display)}                      
                   </span>
                 </div>
-              </>
+              </div>
             ) : (
-              <>
+              <div className="flex flex-col gap-1">
                 <span className="text-gray-500 font-bold">To</span>
                 <div className="flex items-center gap-2">
                   <Avatar contact={participants.to.contact} size="sm" />
                   <span>
                     {participants.to.isContact ? 
                       participants.to.contact.name : 
-                      formatPhoneNumber(participants.to.display)}
+                      formatPhoneNumber(participants.to.display)}                      
                   </span>
                 </div>
-              </>
-            )}
-            
-            {participants.primary.isContact && participants.primary.contact.company && (
-              <>
-                <span className="text-gray-500 font-bold">Company</span>
-                <span>{participants.primary.contact.company}</span>
-              </>
+              </div>
             )}
           </div>
         </div>

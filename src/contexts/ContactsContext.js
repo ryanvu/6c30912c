@@ -11,18 +11,19 @@ const initialContacts = [
       primary: true
     }],
     type: CONTACT_TYPE.PERSONAL,
-    profileSrc: require('../assets/contacts/john-doe.png').default
+    profileSrc: require('../assets/contacts/john.png').default
   },
   {
     id: 2,
-    name: 'Jane Doe',
+    name: 'You',
     phoneNumbers: [{
       number: '18742869541',
       label: 'work',
       primary: true
     }],
     type: CONTACT_TYPE.BUSINESS,
-    company: 'Acme Corp'
+    profileSrc: require('../assets/contacts/speer.jpeg').default,
+    company: 'Speer'
   },
   {
     id: 4,
@@ -32,6 +33,7 @@ const initialContacts = [
       label: 'mobile',
       primary: true
     }],
+    profileSrc: require('../assets/contacts/lebron.png').default,
     type: CONTACT_TYPE.PERSONAL
   },
   {
@@ -42,6 +44,7 @@ const initialContacts = [
       label: 'work',
       primary: true
     }],
+    profileSrc: require('../assets/contacts/michael.png').default,
     type: CONTACT_TYPE.BUSINESS,
     company: 'NBA'
   }
