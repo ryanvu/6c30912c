@@ -19,7 +19,7 @@ const Footer = ({ onTabChange, activeTab }) => {
           onClick={() => onTabChange(APP_TABS.CONTACTS)}
         />
         <NavigationTabs
-          icon={<Icons.dial className="self-center" size={16} />}
+          icon={<Icons.dial className="self-center text-white" size={24} />}
           isActive={activeTab === APP_TABS.DIAL}
           onClick={() => onTabChange(APP_TABS.DIAL)}
           isDialTab={true}

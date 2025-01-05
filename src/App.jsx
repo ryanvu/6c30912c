@@ -7,6 +7,7 @@ import ArchivedCalls from './components/ArchivedCalls/ArchivedCalls.jsx';
 import { ToastProvider } from './contexts/ToastContext.js';
 import { ContactsProvider } from './contexts/ContactsContext.js';
 import Footer from './components/FooterActions/Footer.jsx';
+import Contacts from './components/Contacts/Contacts.jsx';
 
 export const APP_VIEWS = {
   ACTIVITY: 'activity',
@@ -50,7 +51,7 @@ const App = () => {
                 </>
             }
             {
-              tab === APP_TABS.CONTACTS && <div className="h-3/4 flex flex-col items-center justify-center">Contacts</div>
+              tab === APP_TABS.CONTACTS && <Contacts />
             }
             {
               tab === APP_TABS.DIAL && <div className="h-3/4 flex flex-col items-center justify-center">Dial</div>
