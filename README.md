@@ -11,6 +11,7 @@
 
 > Not using a Router
 - Wanted to keep the app as simple as possible
+- Router similuation in `App.jsx` with tabs and views
 
 > Tailwind CSS
 - Using Tailwind CSS for styling and speed
@@ -20,6 +21,8 @@
 
 > Lucide React (Icons)
 - Using Lucide React for icons
+- Icons are imported from Lucide React and used in `utils/icons.js`
+  - For one source of truth and importing from Lucide only in one place
 
 > Context API
 - Using the Context API to manage the state of the app
