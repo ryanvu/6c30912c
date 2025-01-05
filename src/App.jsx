@@ -49,6 +49,18 @@ const App = () => {
                   {view === APP_VIEWS.ARCHIVED && <ArchivedCalls />}
                 </>
             }
+            {
+              tab === APP_TABS.CONTACTS && <div className="h-3/4 flex flex-col items-center justify-center">Contacts</div>
+            }
+            {
+              tab === APP_TABS.DIAL && <div className="h-3/4 flex flex-col items-center justify-center">Dial</div>
+            }
+            {
+              tab === APP_TABS.SETTINGS && <div className="h-3/4 flex flex-col items-center justify-center">Settings</div>
+            }
+            {
+              tab === APP_TABS.PROFILE && <div className="h-3/4 flex flex-col items-center justify-center">Profile</div>
+            }
             </div>
             <Footer onTabChange={handleTabChange} activeTab={tab}/>
           </div>
