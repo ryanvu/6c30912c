@@ -47,6 +47,12 @@ export const formatDuration = (seconds) => {
   return `${mins}min ${secs}s`;
 };
 
+export const formatCallDuration = (s) => {
+  const minutes = Math.floor(s / 60);
+  const seconds = s % 60;
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+};
+
 export const determineCallStatus = (duration, callType, via, from) => {
 
   if (callType === 'missed' && duration > 0) {
