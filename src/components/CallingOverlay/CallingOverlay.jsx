@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { CallStatus } from './CallStatus.jsx';
 import { useCallState } from '../../hooks/useCallState.js';
 import { CALL_RESPONSES } from '../../constants/call.js';
+import { callOverlayVariants } from '../../animations/animations.js';
 
 
 
@@ -20,10 +21,14 @@ function CallingOverlay() {
   } = useCallState(endCall);
 
   return (
-    <motion.div 
-      className="fixed inset-0 bg-black opacity-95 flex items-center justify-center call-info"
+    <motion.div
+      variants={callOverlayVariants.parent}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      className="fixed inset-0 bg-black opacity-90 flex items-center justify-center call-info"
     >
-      <div className="bg-gray-300 shadow-xl w-96 h-full flex flex-col items-center justify-between py-20">
+      <div className="bg-gray-700 shadow-xl w-96 h-full flex flex-col items-center justify-between py-20">
         <CallStatus
           isDialing={isDialing}
           callResponse={callResponse}

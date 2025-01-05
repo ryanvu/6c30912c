@@ -2,7 +2,7 @@ import { CALL_RESPONSES } from '../../constants/call';
 import { formatCallDuration } from '../../utils/utils';
 
 export const CallStatus = ({ isDialing, callResponse, callDuration, callEnded, isCalling }) => (
-  <div className="flex flex-col items-center">
+  <div className="flex flex-col items-center text-white">
     <h1 className="text-2xl font-bold">
       {isDialing ? 'Calling...' : callResponse === CALL_RESPONSES.ANSWERED ? 'Connected' : 'Declined'}
     </h1>

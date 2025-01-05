@@ -41,3 +41,23 @@ export const callInfoVariants = {
     },
   },
 }
+
+export const callOverlayVariants = {
+  parent: {
+    initial: {
+      opacity: 0,
+    },
+    animate: {
+      opacity: 0.95,
+      transition: {
+        duration: 0.5
+      }
+    },
+    exit: {
+      opacity: 0,
+      transition: {
+        duration: 0.3
+      }
+    }
+  },
+}
