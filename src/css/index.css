@@ -94,3 +94,7 @@ header svg {
 .call-info {
   z-index: 1000;
 }
+
+.rotate-135 {
+  transform: rotate(135deg);
+}

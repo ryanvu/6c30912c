@@ -73,11 +73,13 @@ const ActivityDetails = ({ call }) => {
   const { calls, call_type, duration, is_archived, via, from } = call;
 
   const status = determineCallStatus(duration, call_type, via, from);
-  const handleArchive = async () => {
+  const handleArchive = async (e) => {
+    e.stopPropagation();
     await archiveCall(call.id);
   }
 
-  const handleRestore = async () => {
+  const handleRestore = async (e) => {
+    e.stopPropagation();
     await restoreCall(call.id);
   }
 
@@ -94,14 +96,14 @@ const ActivityDetails = ({ call }) => {
  
       {!is_archived && 
       <Button 
-        onClick={handleArchive} 
+        onClick={(e) => handleArchive(e)} 
         type={BUTTON_TYPES.ICON}
         cta="Archive"
         icon={<Icons.archive size={16} />}
       ></Button>}
       {is_archived && 
       <Button 
-        onClick={handleRestore} 
+        onClick={(e) => handleRestore(e)} 
         type={BUTTON_TYPES.ICON}
         cta="Restore"
         icon={<Icons.archiveRestore size={16} />}

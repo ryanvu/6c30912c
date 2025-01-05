@@ -6,7 +6,14 @@ export const BUTTON_TYPES = {
   ICON: 'icon',
 };
 
-function Button({ type = BUTTON_TYPES.PRIMARY, cta, icon, onClick }) {
+export const BUTTON_COLORS = {
+  DEFAULT: 'default',
+  SUCCESS: 'success',
+  DANGER: 'danger',
+  CALL: 'call',
+ };
+
+function Button({ type = BUTTON_TYPES.PRIMARY, color = BUTTON_COLORS.DEFAULT, cta, icon, onClick }) {
   const [isHovered, setIsHovered] = useState(false);
   
   const btnDefaults = 'flex items-center justify-center border-2 transition duration-300 relative';
@@ -17,7 +24,15 @@ function Button({ type = BUTTON_TYPES.PRIMARY, cta, icon, onClick }) {
     [BUTTON_TYPES.ICON]: 'w-8 h-8 rounded-full border-transparent text-gray-500 hover:bg-gray-100',
   };
 
-  const btnStyle = `${btnDefaults} ${variants[type]}`;
+  const colorVariants = {
+    [BUTTON_COLORS.DEFAULT]: 'border-gray-300 text-gray-500 hover:bg-gray-100',
+    [BUTTON_COLORS.SUCCESS]: 'border-green-500 bg-green-500 text-white hover:bg-green-600 hover:border-green-600',
+    [BUTTON_COLORS.DANGER]: 'border-red-500 bg-red-500 text-white hover:bg-red-600 hover:border-red-600',
+    [BUTTON_COLORS.CALL]: 'border-gray-300 bg-gray-400 text-gray-500 hover:bg-gray-100',
+  };
+
+  const btnStyle = `${btnDefaults} ${variants[type]} ${colorVariants[color]}`;
+
 
   if (type === BUTTON_TYPES.ICON) {
     return (

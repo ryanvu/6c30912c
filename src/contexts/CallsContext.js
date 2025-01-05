@@ -3,6 +3,8 @@ import { callsApi } from '../services/calls.service';
 import { useCallsGrouping } from '../hooks/useCallsGrouping';
 import { AnimatePresence } from 'framer-motion';
 import CallInfo from '../components/CallInfo/CallInfo.jsx';
+import CallingOverlay from '../components/CallingOverlay/CallingOverlay.jsx';
+
 const ARCHIVE_ACTIONS = {
   ARCHIVE: true,
   RESTORE: false,
@@ -131,6 +133,9 @@ export const CallsProvider = ({ children }) => {
 
   const openCallDetail = (callId) => setSelectedCallId(callId);
   const closeCallDetail = () => setSelectedCallId(null);
+
+  const startCall = (toNumber) => setIsCalling(toNumber);
+  const endCall = () => setIsCalling(null);
   
   const value = {
     action,
@@ -143,6 +148,7 @@ export const CallsProvider = ({ children }) => {
     archivedDisplayed,
     archiveProgress,
     selectedCallId,
+    isCalling,
     archiveCall,
     archiveAllCalls,
     restoreCall,
@@ -151,6 +157,8 @@ export const CallsProvider = ({ children }) => {
     resetCalls,
     openCallDetail,
     closeCallDetail,
+    startCall,
+    endCall
   };
 
   return (
@@ -165,7 +173,8 @@ export const CallsProvider = ({ children }) => {
             />
           )}
           {
-            isCalling && <span>Calling</span>
+            isCalling && 
+            <CallingOverlay />
           }
         </AnimatePresence>
       </div>

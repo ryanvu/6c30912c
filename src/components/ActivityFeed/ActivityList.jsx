@@ -9,8 +9,8 @@ import { Icons } from '../../utils/icons.js';
 import { useState } from 'react';
 
 export const ActivityList = () => {
-  const { activeDisplayed, loading, action, archiveAllCalls, archiveProgress } = useCalls();
-  const [confirmCallMsg, setConfirmCallMsg] = useState('');
+  const { activeDisplayed, loading, action, archiveAllCalls, archiveProgress, startCall } = useCalls();
+  const [isCallingInfo, setIsCallingInfo] = useState({ toNumber: null, msg: null });
   const { 
     isConfirmOpen: isArchiveConfirmOpen, 
     openConfirm, 
@@ -23,7 +23,7 @@ export const ActivityList = () => {
     openConfirm: openCallingConfirm, 
     closeConfirm: closeCallingConfirm, 
     handleConfirm: handleCallingConfirm 
-  } = useConfirmation(() => console.log('hello'));
+  } = useConfirmation(() => startCall(isCallingInfo.toNumber));
 
 
   if (activeDisplayed.length === 0) {
@@ -33,7 +33,7 @@ export const ActivityList = () => {
   }
 
   const handleCallClick = (call, displayNumber) => {
-    setConfirmCallMsg(`Call ${displayNumber}?`);
+    setIsCallingInfo({ toNumber: displayNumber, msg: `Call ${displayNumber}?` });
     openCallingConfirm();
   };
 
@@ -48,7 +48,7 @@ export const ActivityList = () => {
         cta={isArchiveConfirmOpen ? "Archive all" : "Call"}
         message={isArchiveConfirmOpen 
           ? "Are you sure you want to archive all calls?" 
-          : confirmCallMsg
+          : isCallingInfo.msg
         }
       />
 
@@ -63,8 +63,8 @@ export const ActivityList = () => {
 
       {activeDisplayed.map(({ date, calls }) => (
         <div key={date} className="flex flex-col space-y-4">
-          <div className="self-center">
-            <h3 className="text-gray-500 font-bold text-md">{date}</h3>
+          <div className="border-l-2 border-black pl-2">
+            <h3 className="font-medium text-md">{date}</h3>
           </div>
           <div className="flex flex-col space-y-4">
             {calls.map((call) => (
