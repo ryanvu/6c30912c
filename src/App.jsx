@@ -15,11 +15,24 @@ export const APP_VIEWS = {
   DIAL: 'dial',
 }
 
+export const APP_TABS = {
+  CALLS: 'calls',
+  CONTACTS: 'contacts',
+  DIAL: 'dial',
+  SETTINGS: 'settings',
+  PROFILE: 'profile',
+}
+
 const App = () => {
   const [view, setView] = useState(APP_VIEWS.ACTIVITY);
+  const [tab, setTab] = useState(APP_TABS.CALLS);
 
   const handleViewChange = (view) => {
     setView(view);
+  }
+
+  const handleTabChange = (tab) => {
+    setTab(tab);
   }
 
   return (
@@ -27,12 +40,17 @@ const App = () => {
       <ContactsProvider>
         <CallsProvider>
           <div className='container'>
-            <Header onViewChange={handleViewChange} activeView={view} />
+            <Header onViewChange={handleViewChange} activeView={view} activeTab={tab} />
             <div className="flex-1 overflow-y-auto relative">
-              {view === APP_VIEWS.ACTIVITY && <ActivityList />}
-              {view === APP_VIEWS.ARCHIVED && <ArchivedCalls />}
+            {
+              tab === APP_TABS.CALLS && 
+                <>
+                  {view === APP_VIEWS.ACTIVITY && <ActivityList />}
+                  {view === APP_VIEWS.ARCHIVED && <ArchivedCalls />}
+                </>
+            }
             </div>
-            <Footer onViewChange={handleViewChange} activeView={view}/>
+            <Footer onTabChange={handleTabChange} activeTab={tab}/>
           </div>
         </CallsProvider>
       </ContactsProvider>

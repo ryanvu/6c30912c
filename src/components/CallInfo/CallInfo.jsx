@@ -114,7 +114,7 @@ const CallInfo = ({ callId, onClose }) => {
           </div>
         </div>
 
-        <div className="p-6 space-y-6">
+        <div className="px-6 py-4 space-y-6">
           {/* Basic Info */}
           <div className="grid grid-cols-[100px_1fr] gap-y-4 text-sm">
             {/* Time */}
