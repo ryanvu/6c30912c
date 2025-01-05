@@ -3,13 +3,17 @@ import { formatDuration, formatPhoneNumber, formatTime, determineCallStatus, get
 import { Icons } from '../../utils/icons';
 import { CALL_DIRECTIONS } from '../../config';
 import { useCalls } from '../../contexts/CallsContext';
+import { useContacts } from '../../contexts/ContactsContext';
+import { getCallParticipants } from '../../utils/contacts';
 import { motion } from 'framer-motion';
 import { callInfoVariants } from '../../animations/animations';
 import Button, { BUTTON_TYPES } from '../Button/Button.jsx';
 import { useToastContext } from '../../contexts/ToastContext.js';
+import Avatar from '../Avatar/Avatar.jsx';
 
 const CallInfo = ({ callId, onClose }) => {
   const { getCallInfo, archiveCall, restoreCall } = useCalls();
+  const { contacts } = useContacts();
   const { showToast } = useToastContext();
   
   const [callData, setCallData] = useState(null);
@@ -35,7 +39,7 @@ const CallInfo = ({ callId, onClose }) => {
     created_at,
   } = callData;
 
-  const displayNumber = getDisplayNumber(direction, from, to);
+  const participants = getCallParticipants(callData, contacts);
   const status = determineCallStatus(duration, call_type, via, from);
   const isArchived = is_archived;
 
@@ -51,6 +55,8 @@ const CallInfo = ({ callId, onClose }) => {
     onClose();
   }
 
+  console.log(participants);
+
   return (
     <motion.div
       variants={callInfoVariants.parent}
@@ -63,26 +69,41 @@ const CallInfo = ({ callId, onClose }) => {
         <div className="px-6 py-4 border-b">
           <div className="flex justify-between items-start">
             <div className="flex gap-3">
-              <div>
+              <div className="flex flex-col items-center gap-2">
+                <Avatar contact={participants.primary.contact} size="lg" />
                 {direction === CALL_DIRECTIONS.INBOUND ? (
-                  <Icons.phoneIncoming className={status.color} size={24} />
+                  <Icons.phoneIncoming className={status.color} size={20} />
                 ) : (
-                  <Icons.phoneOutgoing className={status.color} size={24} />
+                  <Icons.phoneOutgoing className={status.color} size={20} />
                 )}
               </div>
               <div>
-                <div className="flex gap-2 items-center">
-                  <h2 className="text-xl font-bold">{formatPhoneNumber(displayNumber)}</h2>
-                  { isArchived && <span className="text-xs rounded-full bg-gray-400 text-white py-1 px-2">Archived</span> }
-                </div>
-                <div className="flex gap-1 items-center">
-                <span className={`text-sm ${status.color}`}>{status.label}</span>
-                  {duration > 0 && (
-                    <span className="text-sm text-gray-500 ml-2">
-                      ({formatDuration(duration)})
+                <div className="flex flex-col">
+                  <div className="flex gap-2 items-center">
+                    <h2 className="text-xl font-bold">
+                      {participants.primary.isContact ? 
+                        participants.primary.contact.name : 
+                        formatPhoneNumber(participants.primary.display)}
+                    </h2>
+                    {isArchived && 
+                      <span className="text-xs rounded-full bg-gray-400 text-white py-1 px-2">
+                        Archived
+                      </span>
+                    }
+                  </div>
+                  {participants.primary.isContact && 
+                    <span className="text-sm text-gray-500">
+                      {formatPhoneNumber(participants.primary.contact.phoneNumbers[0].number)}
                     </span>
-                  )}
-                
+                  }
+                  <div className="flex gap-1 items-center mt-1">
+                    <span className={`text-sm ${status.color}`}>{status.label}</span>
+                    {duration > 0 && (
+                      <span className="text-sm text-gray-500 ml-2">
+                        ({formatDuration(duration)})
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -95,25 +116,52 @@ const CallInfo = ({ callId, onClose }) => {
           </div>
         </div>
 
-
         <div className="p-6 space-y-6">
           {/* Basic Info */}
-          <div className="grid grid-cols-2 gap-y-2 text-sm">
+          <div className="grid grid-cols-[100px_1fr] gap-y-4 text-sm">
             <span className="text-gray-500 font-bold">Time</span>
             <span>{formatTime(created_at)}</span>
             
             <span className="text-gray-500 font-bold">Via</span>
-            <span>{formatPhoneNumber(via)}</span>
+            <div className="flex items-center gap-2">
+              <Avatar contact={participants.via.contact} size="sm" />
+              <span>
+                {participants.via.isContact ? 
+                  participants.via.contact.name : 
+                  formatPhoneNumber(participants.via.display)}
+              </span>
+            </div>
 
             {direction === CALL_DIRECTIONS.INBOUND ? (
               <>
                 <span className="text-gray-500 font-bold">From</span>
-                <span>{formatPhoneNumber(from)}</span>
+                <div className="flex items-center gap-2">
+                  <Avatar contact={participants.from.contact} size="sm" />
+                  <span>
+                    {participants.from.isContact ? 
+                      participants.from.contact.name : 
+                      formatPhoneNumber(participants.from.display)}
+                  </span>
+                </div>
               </>
             ) : (
               <>
                 <span className="text-gray-500 font-bold">To</span>
-                <span>{formatPhoneNumber(to)}</span>
+                <div className="flex items-center gap-2">
+                  <Avatar contact={participants.to.contact} size="sm" />
+                  <span>
+                    {participants.to.isContact ? 
+                      participants.to.contact.name : 
+                      formatPhoneNumber(participants.to.display)}
+                  </span>
+                </div>
+              </>
+            )}
+            
+            {participants.primary.isContact && participants.primary.contact.company && (
+              <>
+                <span className="text-gray-500 font-bold">Company</span>
+                <span>{participants.primary.contact.company}</span>
               </>
             )}
           </div>
