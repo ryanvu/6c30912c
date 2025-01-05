@@ -4,6 +4,7 @@ import Header from './Header.jsx';
 import { createRoot } from 'react-dom/client';
 import { ActivityList } from './components/ActivityFeed/ActivityList.jsx';
 import ArchivedCalls from './components/ArchivedCalls/ArchivedCalls.jsx';
+import { ToastProvider } from './contexts/ToastContext.js';
 
 export const APP_VIEWS = {
   ACTIVITY: 'activity',
@@ -18,13 +19,15 @@ const App = () => {
   }
 
   return (
-    <CallsProvider>
-      <div className='container'>
-        <Header onViewChange={handleViewChange} activeView={view} />
-        {view === APP_VIEWS.ACTIVITY && <ActivityList />}
-        {view === APP_VIEWS.ARCHIVED && <ArchivedCalls />}
-      </div>
-    </CallsProvider>
+    <ToastProvider>
+      <CallsProvider>
+        <div className='container'>
+          <Header onViewChange={handleViewChange} activeView={view} />
+          {view === APP_VIEWS.ACTIVITY && <ActivityList />}
+          {view === APP_VIEWS.ARCHIVED && <ArchivedCalls />}
+        </div>
+      </CallsProvider>
+    </ToastProvider>
   );
 };
 const root = createRoot(document.getElementById('app'));

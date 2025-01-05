@@ -5,6 +5,7 @@ import { useCalls } from '../../contexts/CallsContext';
 import Button, { BUTTON_TYPES } from '../Button/Button.jsx';
 import { Icons } from '../../utils/icons.js';
 import { callDetailVariants } from '../../animations/animations.js';
+import { useToastContext } from '../../contexts/ToastContext.js';
 
 const ActivityItem = ({ call, onCallClick }) => {
   const { direction, call_type, count, via, to, from } = call;
@@ -68,6 +69,7 @@ const ActivityItem = ({ call, onCallClick }) => {
 };
 
 const ActivityDetails = ({ call }) => {
+  const { showToast } = useToastContext();
   const { archiveCall, restoreCall } = useCalls();
 
   const { calls, call_type, duration, is_archived, via, from } = call;
@@ -76,11 +78,13 @@ const ActivityDetails = ({ call }) => {
   const handleArchive = async (e) => {
     e.stopPropagation();
     await archiveCall(call.id);
+    showToast({ message: 'Call archived', type: 'success' });
   }
 
   const handleRestore = async (e) => {
     e.stopPropagation();
     await restoreCall(call.id);
+    showToast({ message: 'Call restored', type: 'success' });
   }
 
   return (
