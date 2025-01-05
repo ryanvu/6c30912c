@@ -6,10 +6,13 @@ import { ActivityList } from './components/ActivityFeed/ActivityList.jsx';
 import ArchivedCalls from './components/ArchivedCalls/ArchivedCalls.jsx';
 import { ToastProvider } from './contexts/ToastContext.js';
 import { ContactsProvider } from './contexts/ContactsContext.js';
+import Footer from './components/FooterActions/Footer.jsx';
 
 export const APP_VIEWS = {
   ACTIVITY: 'activity',
   ARCHIVED: 'archived',
+  CONTACTS: 'contacts',
+  DIAL: 'dial',
 }
 
 const App = () => {
@@ -25,8 +28,11 @@ const App = () => {
         <CallsProvider>
           <div className='container'>
             <Header onViewChange={handleViewChange} activeView={view} />
-            {view === APP_VIEWS.ACTIVITY && <ActivityList />}
-            {view === APP_VIEWS.ARCHIVED && <ArchivedCalls />}
+            <div className="flex-1 overflow-y-auto relative">
+              {view === APP_VIEWS.ACTIVITY && <ActivityList />}
+              {view === APP_VIEWS.ARCHIVED && <ArchivedCalls />}
+            </div>
+            <Footer onViewChange={handleViewChange} activeView={view}/>
           </div>
         </CallsProvider>
       </ContactsProvider>

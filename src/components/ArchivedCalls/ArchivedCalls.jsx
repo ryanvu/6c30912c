@@ -25,7 +25,7 @@ function ArchivedCalls() {
   }
 
   return (
-    <div className="flex flex-col space-y-6 p-4">
+    <div className="flex flex-col space-y-6 p-4 relative">
       <LoadingModal isOpen={loading} action={action} progress={archiveProgress}></LoadingModal>
       <ConfirmationModal 
         isOpen={isConfirmOpen}

@@ -35,6 +35,16 @@ header {
   background: white;
 }
 
+footer {
+  height: auto;
+  max-height: 60px;
+  margin: 0 auto;
+  position: sticky;
+  bottom: 0;
+  z-index: 100;
+  background: white;
+}
+
 header svg {
   display: block;
   width: auto;
@@ -60,10 +70,12 @@ header svg {
   background: white;
   border-radius: 3px;
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, .9);
-  overflow-y: scroll;
+  overflow-y: hidden;
   scrollbar-width: none;
   position: relative;
   will-change: transform;
+  display: flex;
+  flex-direction: column;
   -webkit-overflow-scrolling: touch;
 }
 
