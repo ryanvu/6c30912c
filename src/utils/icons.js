@@ -1,10 +1,11 @@
 // Import the icons used in the workspace
-import { Archive, ArchiveRestore, ArchiveX, Info, PhoneIncoming, PhoneOutgoing, X, PhoneOff, ScanSearch, Phone, Volume2, MicOff, User, NotebookTabs, Grip, Settings, CircleDot, ChevronRight, Plus, Search } from 'lucide-react';
+import { Archive, ArchiveRestore, ArchiveX, Info, PhoneIncoming, PhoneOutgoing, X, PhoneOff, ScanSearch, Phone, Volume2, MicOff, User, NotebookTabs, Grip, Settings, CircleDot, ChevronRight, Plus, Search, Delete } from 'lucide-react';
 
 export const Icons = {
   archive: Archive,
   archiveRestore: ArchiveRestore,
   archiveX: ArchiveX,
+  backspace: Delete,
   contacts: NotebookTabs,
   chevronRight: ChevronRight,
   dial: Grip,
