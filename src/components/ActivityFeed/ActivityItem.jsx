@@ -6,69 +6,93 @@ import Button, { BUTTON_TYPES } from '../Button/Button.jsx';
 import { Icons } from '../../utils/icons.js';
 import { callDetailVariants } from '../../animations/animations.js';
 import { useToastContext } from '../../contexts/ToastContext.js';
+import { useContacts } from '../../contexts/ContactsContext.js';
+import { getCallParticipants } from '../../utils/contacts';
+import Avatar from '../Avatar/Avatar.jsx';
 
 const ActivityItem = ({ call, onCallClick }) => {
-  const { direction, call_type, count, via, to, from } = call;
+  const { contacts } = useContacts();
   const [showActions, setShowActions] = useState(false);
-
+  
+  const participants = getCallParticipants(call, contacts);
+  const { direction, call_type, count, duration } = call;
+  
   const iconColor = call_type === CALL_TYPE.MISSED ? 'text-red-500' : 'text-green-500';
   const expandedStyle = showActions ? 'border-black' : 'border-gray-300';
-  const displayNumber = getDisplayNumber(direction, from, to);
   const displayNumberColor = call_type === CALL_TYPE.MISSED ? 'text-red-500' : 'text-black';
 
   const handleToggleExpand = (e) => {
     e.stopPropagation();
     setShowActions(prev => !prev);
-  }
+  };
 
   return (
-    <div className={"activity-item " + expandedStyle} onClick={() => onCallClick(call, formatPhoneNumber(displayNumber))}>
+    <div 
+      className={"activity-item " + expandedStyle} 
+      onClick={() => onCallClick(call, participants.primary.display)}
+    >
       <div className="flex items-center gap-2">
-        <div>
-          {direction === CALL_DIRECTIONS.INBOUND ? (
-            <Icons.phoneIncoming className={iconColor} size={18} />
-          ) : (
-            <Icons.phoneOutgoing className={iconColor} size={18} />
-          )}
-        </div>
-        
-        <div className="flex flex-col">
-          <div className="flex flex-row gap-2 items-center">
-            <span className={displayNumberColor + ' font-bold'}>{formatPhoneNumber(displayNumber)}</span>
-            { count > 1 && <span className="text-gray-400 text-xs">({count})</span> }
-          </div>
-          { via !== from &&
-            <span className="text-gray-400 text-xs italic">
-              via {formatPhoneNumber(via)}
+
+        <Avatar contact={participants.primary.contact} size="md" />
+        <div className="flex flex-col gap-1">
+
+          <div className="flex flex-row gap-1 items-center">
+            <span className={displayNumberColor + ' font-bold'}>
+              {participants.primary.display}
             </span>
-          }
+            {count > 1 && <span className="text-gray-400 text-xs">({count})</span>}
+          </div>
+
+          <div className="flex gap-2 items-center">
+
+            {direction === CALL_DIRECTIONS.INBOUND ? (
+              <Icons.phoneIncoming className={iconColor} size={12} />
+            ) : (
+              <Icons.phoneOutgoing className={iconColor} size={12} />
+            )}
+
+          {(participants.via.id !== participants.from.id 
+            && participants.via.id !== participants.to.id) ? (
+            <span className="text-gray-400 text-xs italic">
+              via {participants.via.display}
+            </span>) : (
+            <span className="text-gray-400 text-xs italic">
+              {determineCallStatus(duration, call_type, participants.via.id, participants.from.id).label} • {formatDuration(duration)}
+            </span>
+          )}
+          </div>
         </div>
 
         <div
-          onClick={(e) => handleToggleExpand(e)}
-          className="cursor-pointer flex gap-1 items-center bg-black text-white ml-auto text-xs rounded-l-lg rounded-r-none border-r-0 px-2 py-1 transition transform hover:scale-105">
-          {formatTime(call.created_at)} 
+          onClick={handleToggleExpand}
+          className="cursor-pointer flex gap-1 items-center bg-black text-white ml-auto text-xs rounded-l-lg rounded-r-none border-r-0 px-2 py-1 transition transform hover:scale-105"
+        >
+          {formatTime(call.created_at)}
           {showActions ? <Icons.x size={16} /> : <Icons.info size={16} />}
         </div>
-
       </div>
+
       <AnimatePresence mode="wait">
-        {showActions && 
-        <motion.div
-          key="expanded"
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          exit={{ opacity: 0, height: 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          <ActivityDetails call={call} />
-        </motion.div>} 
+        {showActions && (
+          <motion.div
+            key="expanded"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <ActivityDetails 
+              call={call}
+              participants={participants}
+            />
+          </motion.div>
+        )}
       </AnimatePresence>
     </div>
   );
 };
 
-const ActivityDetails = ({ call }) => {
+const ActivityDetails = ({ call, participants }) => {
   const { showToast } = useToastContext();
   const { archiveCall, restoreCall } = useCalls();
 
@@ -137,8 +161,7 @@ const CallDetailPreview = ({ call, status }) => {
       <div className="flex flex-col">
         <span>{formatTime(call.created_at)}</span>
         <span className={status.color}>
-          {status.label} 
-          <span className="italic">{formatDuration(call.duration)}</span>
+          {status.label} • <span className="italic">{formatDuration(call.duration)}</span>
         </span>
       </div>
 

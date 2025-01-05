@@ -48,6 +48,7 @@ export const CallsProvider = ({ children }) => {
     try {
       setLoading(true);
       const data = await callsApi.fetchCalls();
+
       processCalls(data);
     } catch (err) {
       setError(err);
